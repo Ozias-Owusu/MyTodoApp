@@ -5,12 +5,7 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.icu.util.Calendar
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,18 +14,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -38,23 +27,17 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.rememberModalBottomSheetState
 
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -63,22 +46,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 
-import com.google.firestore.v1.Value
-
-data class TodoItem(val text:String, val dateTime:String)
+data class TodoItem(val text:String, val dateTime:String, var isCompleted: Boolean = false)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UiUpdate(modifier: Modifier = Modifier) {
+fun UiUpdate(modifier: Modifier = Modifier, navController: NavController) {
     var showTodoDetails by remember { mutableStateOf(false) }
     var todoList by remember { mutableStateOf(listOf<TodoItem>()) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
@@ -97,8 +78,7 @@ fun UiUpdate(modifier: Modifier = Modifier) {
                             .size(80.dp) 
                             .clip(shape = CircleShape)
                             .background(Color(0xFF000000))
-                            .clickable {  }
-                        ,
+                            .clickable {  },
                         contentAlignment = Alignment.Center
                     ) {
                         IconButton(onClick = {}) {
@@ -131,7 +111,9 @@ fun UiUpdate(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("My Todos")
                 }
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {  }) {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+                    navController.navigate("completedTodos_page")
+                }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_check_circle_24),
                         contentDescription = "Completed Todos",
@@ -302,95 +284,7 @@ fun UiUpdate(modifier: Modifier = Modifier) {
             }
         }
     }
-
-    }
-
-    @Composable
-    fun TodoDetailsCard(
-        modifier: Modifier = Modifier, initialTodo: TodoItem? = null,
-        onAddTodo: (TodoItem) -> Unit, onCancel: () -> Unit
-    ) {
-        var todoText by remember { mutableStateOf("") }
-        var selectedDateTime by remember { mutableStateOf("") }
-        val context = LocalContext.current
-        var errorMessage by remember { mutableStateOf<String?>(null) }
-
-
-        Card(
-            modifier
-                .padding(vertical = 40.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            )
-            {
-
-                Text(
-                    text = "TODO DETAILS",
-                    fontSize = 25.sp,
-                    fontStyle = FontStyle.Italic
-                )
-                Spacer(modifier = Modifier.padding(5.dp))
-                OutlinedTextField(
-                    value = todoText,
-                    onValueChange = {
-                        todoText = it
-                    },
-                    label = { Text("Please enter todo") },
-                )
-                Spacer(modifier = Modifier.padding(10.dp))
-                OutlinedTextField(
-                    value = selectedDateTime,
-                    onValueChange = {},
-                    label = { Text("Please select time") },
-                    readOnly = true,
-                    trailingIcon = {
-                        IconButton(onClick = {
-                            showDateTimePicker(context) { dateTime ->
-                                selectedDateTime = dateTime
-
-                            }
-
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_calendar_today_24),
-                                contentDescription = "Calender"
-                            )
-                        }
-                    }
-                )
-                Spacer(modifier = Modifier.padding(10.dp))
-
-                errorMessage?.let {
-                    Text(text = it, color = Color(0xFFFD4F4F), fontSize = 20.sp)
-                    Spacer(modifier = Modifier.padding(5.dp))
-                }
-
-                Row {
-                    Button(onClick = {
-                        if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
-                            onAddTodo(TodoItem(todoText, selectedDateTime))
-                        } else {
-                            errorMessage = "Please fill all fields."
-                        }
-                    }) {
-                        Text(text = if (initialTodo != null) "Update Todo" else "Add Todo")
-                    }
-                    Spacer(modifier = Modifier.width(25.dp))
-
-                    Button(onClick = { onCancel() }) {
-                        Text(text = "Cancel")
-                    }
-                }
-
-            }
-        }
-    }
-
+}
 
     fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
         val calendar = Calendar.getInstance()
@@ -414,96 +308,8 @@ fun UiUpdate(modifier: Modifier = Modifier) {
         ).show()
     }
 
-    @Composable
-    fun TodoItemCard(todo: TodoItem, onLongPress: () -> Unit, onSwipeRight: () -> Unit) {
-        var offsetX by remember { mutableFloatStateOf(0f) }
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .offset(x = offsetX.dp) // Apply the offset for visual movement
-                .draggable(
-                    state = rememberDraggableState { delta ->
-                        offsetX += delta // Update offset as the user drags
-                    },
-                    orientation = Orientation.Horizontal,
-                    onDragStopped = { velocity ->
-                        if (velocity > 1000 || offsetX > 100) {  // Swiping right
-                            onSwipeRight()
-                        }
-                        offsetX = 0f // Reset offset after swipe
-                    }
-                )
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onLongPress = { onLongPress() }
-                    )
-                }
 
 
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "Todo: ${todo.text}", fontSize = 18.sp)
-                Text(text = "Due: ${todo.dateTime}", fontSize = 14.sp)
-            }
-        }
-    }
 
 
-    @Composable
-    fun LongPressDialog(
-        todo: TodoItem,
-        onEdit: () -> Unit,
-//    onDelete: () -> Unit,
-        onDismiss: () -> Unit
-    ) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text(text = "Actions for ${todo.text}") },
-            text = { Text(text = "Choose an action") },
-            confirmButton = {
-                TextButton(onClick = {
-                    onEdit()
-                    onDismiss()
-                }) {
-                    Text("Edit")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-//                onDelete()
-                    onDismiss()
-                }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-
-    @Composable
-    fun DeleteConfirmationDialog(
-        onConfirm: () -> Unit,
-        onDismiss: () -> Unit,
-        onDelete: () -> Unit
-    ) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = { Text(text = "Delete Todo") },
-            text = { Text(text = "Are you sure you want to delete this todo?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    onDismiss()
-                }) {
-                    Text("Cancel")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    onDelete()
-                    onDismiss()
-                }) {
-                    Text("Delete")
-                }
-            }
-        )
-    }
 
