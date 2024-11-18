@@ -54,6 +54,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -121,7 +122,7 @@ fun UiUpdate(modifier: Modifier = Modifier) {
 
                 HorizontalDivider()
 
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {  }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_assignment_24),
                         contentDescription = "My Todos",
@@ -130,8 +131,27 @@ fun UiUpdate(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("My Todos")
                 }
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {  }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_check_circle_24),
+                        contentDescription = "Completed Todos",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Completed Todos")
+                }
 
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {  }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_loop_24),
+                        contentDescription = "In-Progess Todos",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("In-Progess Todos")
+                }
+
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {  }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_settings_24),
                         contentDescription = "Settings",
@@ -140,6 +160,7 @@ fun UiUpdate(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Settings")
                 }
+
             }
         }
     )
@@ -395,7 +416,7 @@ fun UiUpdate(modifier: Modifier = Modifier) {
 
     @Composable
     fun TodoItemCard(todo: TodoItem, onLongPress: () -> Unit, onSwipeRight: () -> Unit) {
-        var offsetX by remember { mutableStateOf(0f) }
+        var offsetX by remember { mutableFloatStateOf(0f) }
         Card(
             modifier = Modifier
                 .fillMaxWidth()
