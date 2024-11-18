@@ -34,10 +34,11 @@ class MainActivity : ComponentActivity() {
                        CompletedTodos(todoList = listOf())
                     }
                     composable("in_progressTodos_page") {
+                        InprogressTodo()
 
                     }
                     composable("settings_page") {
-
+                        Settings()
                     }
 
                 }

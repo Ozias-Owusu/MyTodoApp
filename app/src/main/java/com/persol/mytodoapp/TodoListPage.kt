@@ -99,9 +99,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                         Text("Contact Info", fontSize = 12.sp)
                     }
                 }
-
                 HorizontalDivider()
-
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {  }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_assignment_24),
@@ -122,8 +120,9 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Completed Todos")
                 }
-
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {  }) {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+                    navController.navigate("in_progressTodos_page")
+                }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_loop_24),
                         contentDescription = "In-Progess Todos",
@@ -132,8 +131,9 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("In-Progess Todos")
                 }
-
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {  }) {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+                    navController.navigate("settings_page")
+                }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_settings_24),
                         contentDescription = "Settings",
@@ -170,7 +170,6 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     },
                     actions = {
                         IconButton(onClick = {
-
                         }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_person_24),
@@ -183,7 +182,6 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     )
                 )
             },
-
             ) { paddingValues ->
             Box(
                 modifier = Modifier
@@ -221,7 +219,6 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                         }
                     }
                 }
-
                 FloatingActionButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -236,7 +233,6 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                         contentDescription = "Add"
                     )
                 }
-
                 if (showTodoDetails) {
                     TodoDetailsCard(modifier = Modifier.align(Alignment.Center),
                         onAddTodo = { todo ->
@@ -264,7 +260,6 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                         }
                     )
                 }
-
                 if (showDeleteConfirmation && selectedTodo != null) {
                     DeleteConfirmationDialog(
                         onConfirm = {
@@ -285,7 +280,6 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
         }
     }
 }
-
     fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
         val calendar = Calendar.getInstance()
         DatePickerDialog(
