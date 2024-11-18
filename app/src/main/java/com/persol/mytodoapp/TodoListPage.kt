@@ -59,7 +59,7 @@ data class TodoItem(val text:String, val dateTime:String, var isCompleted: Boole
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UiUpdate(modifier: Modifier = Modifier, navController: NavController) {
+fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
     var showTodoDetails by remember { mutableStateOf(false) }
     var todoList by remember { mutableStateOf(listOf<TodoItem>()) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
