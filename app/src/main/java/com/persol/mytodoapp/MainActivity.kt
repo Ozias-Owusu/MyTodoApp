@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             NavHost(
                 navController = navController,
-                startDestination = "home",
+                startDestination = "home_page",
                 builder =
                 {
                     composable("home_page") {

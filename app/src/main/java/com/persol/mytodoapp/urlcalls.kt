@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URL
 
-// This function fetches data from the provided URL and returns it as a String
 suspend fun fetchDataFromApi(urlString: String): String? {
     val url = URL(urlString)
     val connection = url.openConnection()
