@@ -38,6 +38,7 @@ import androidx.compose.material3.rememberDrawerState
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,12 +51,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 
 data class TodoItem(val text:String, val dateTime:String, var isCompleted: Boolean = false)
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +70,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
     var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+    val viewModel: TodoViewModel = viewModel()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -189,7 +195,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     .padding(paddingValues)
             ) {
                 if (!showTodoDetails) {
-                    if (todoList.isEmpty()) {
+                    if (viewModel.todoList.isEmpty()) {
                         Column(
                             modifier.fillMaxSize(),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -206,7 +212,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         )
                         {
-                            items(todoList) { todo ->
+                            items(viewModel.todoList) { todo ->
                                 TodoItemCard(
                                     todo = todo,
                                     onLongPress = { selectedTodo = todo },
@@ -233,13 +239,29 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                         contentDescription = "Add"
                     )
                 }
+//                if (showTodoDetails) {
+//                    TodoDetailsCard(modifier = Modifier.align(Alignment.Center),
+//                        onAddTodo = { todo ->
+//                            if (editingTodo != null) {
+//                                todoList = todoList.map { if (it == editingTodo) todo else it }
+//                            } else {
+//                                todoList = todoList + todo
+//                            }
+//                            showTodoDetails = false
+//                            editingTodo = null
+//                        },
+//                        onCancel = { showTodoDetails = false }
+//                    )
+//                }
                 if (showTodoDetails) {
-                    TodoDetailsCard(modifier = Modifier.align(Alignment.Center),
-                        onAddTodo = { todo ->
+                    TodoDetailsCard(
+                        modifier = Modifier.align(Alignment.Center),
+                        initialTodo = editingTodo,
+                        onAddTodo = { newTodo ->
                             if (editingTodo != null) {
-                                todoList = todoList.map { if (it == editingTodo) todo else it }
+                                viewModel.updateTodo(editingTodo!!, newTodo)
                             } else {
-                                todoList = todoList + todo
+                                viewModel.addTodo(newTodo)
                             }
                             showTodoDetails = false
                             editingTodo = null
@@ -251,9 +273,12 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     LongPressDialog(
                         todo = todo,
                         onEdit = {
-                            editingTodo = todo
+                            editingTodo = todo.copy()
                             showTodoDetails = true
                             selectedTodo = null
+                        },
+                        onDelete = {
+                            viewModel.deleteTodo(todo)
                         },
                         onDismiss = {
                             selectedTodo = null
@@ -263,7 +288,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                 if (showDeleteConfirmation && selectedTodo != null) {
                     DeleteConfirmationDialog(
                         onConfirm = {
-                            todoList = todoList - selectedTodo!!
+                            viewModel.deleteTodo(selectedTodo!!)
                             selectedTodo = null
                             showDeleteConfirmation = false
                         },
@@ -271,7 +296,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                             showDeleteConfirmation = false
                         },
                         onDelete = {
-                            todoList = todoList - selectedTodo!!
+                            viewModel.deleteTodo(selectedTodo!!)
                             selectedTodo = null
                         }
                     )

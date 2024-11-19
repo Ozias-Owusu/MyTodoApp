@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 fun LongPressDialog(
     todo: TodoItem,
     onEdit: () -> Unit,
-//    onDelete: () -> Unit,
+    onDelete: () -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -26,10 +26,10 @@ fun LongPressDialog(
         },
         dismissButton = {
             TextButton(onClick = {
-//                onDelete()
+                onDelete()
                 onDismiss()
             }) {
-                Text("Cancel")
+                Text("Delete")
             }
         }
     )

@@ -26,16 +26,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun TodoDetailsCard(
     modifier: Modifier = Modifier, initialTodo: TodoItem? = null,
     onAddTodo: (TodoItem) -> Unit, onCancel: () -> Unit
 ) {
-    var todoText by remember { mutableStateOf("") }
-    var selectedDateTime by remember { mutableStateOf("") }
+    var todoText by remember { mutableStateOf(initialTodo?.text ?: "") }
+    var selectedDateTime by remember { mutableStateOf(initialTodo?.dateTime ?: "") }
     val context = LocalContext.current
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    val viewModel: TodoViewModel = viewModel()
 
 
     Card(
@@ -92,9 +94,18 @@ fun TodoDetailsCard(
             }
 
             Row {
+
                 Button(onClick = {
                     if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
-                        onAddTodo(TodoItem(todoText, selectedDateTime))
+                        if (initialTodo != null) {
+                            val updatedTodo = initialTodo.copy(text = todoText, dateTime = selectedDateTime)
+                            onAddTodo(updatedTodo)
+                        } else {
+                            onAddTodo(TodoItem(todoText, selectedDateTime))
+                        }
+                        todoText = ""
+                        selectedDateTime = ""
+                        onCancel()
                     } else {
                         errorMessage = "Please fill all fields."
                     }
