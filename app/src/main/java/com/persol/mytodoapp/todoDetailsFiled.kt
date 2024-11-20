@@ -1,5 +1,6 @@
 package com.persol.mytodoapp
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -69,7 +70,13 @@ fun TodoDetailsCard(
             Spacer(modifier = Modifier.padding(10.dp))
             OutlinedTextField(
                 value = selectedDateTime,
-                onValueChange = {},
+                onValueChange = {
+                    selectedDateTime = it
+                },
+                modifier= Modifier.clickable {
+                    showDateTimePicker(context) { dateTime ->
+                    selectedDateTime = dateTime
+                }},
                 label = { Text("Please select time") },
                 readOnly = true,
                 trailingIcon = {

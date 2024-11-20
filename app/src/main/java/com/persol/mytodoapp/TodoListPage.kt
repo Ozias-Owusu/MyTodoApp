@@ -219,7 +219,8 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                                     onSwipeRight = {
                                         selectedTodo = todo
                                         showDeleteConfirmation = true
-                                    }
+                                    },
+                                    viewModel = viewModel
                                 )
                             }
                         }
@@ -239,20 +240,6 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                         contentDescription = "Add"
                     )
                 }
-//                if (showTodoDetails) {
-//                    TodoDetailsCard(modifier = Modifier.align(Alignment.Center),
-//                        onAddTodo = { todo ->
-//                            if (editingTodo != null) {
-//                                todoList = todoList.map { if (it == editingTodo) todo else it }
-//                            } else {
-//                                todoList = todoList + todo
-//                            }
-//                            showTodoDetails = false
-//                            editingTodo = null
-//                        },
-//                        onCancel = { showTodoDetails = false }
-//                    )
-//                }
                 if (showTodoDetails) {
                     TodoDetailsCard(
                         modifier = Modifier.align(Alignment.Center),

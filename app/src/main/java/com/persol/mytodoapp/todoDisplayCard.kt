@@ -1,5 +1,6 @@
 package com.persol.mytodoapp
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
@@ -25,9 +26,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 
+@SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
-fun TodoItemCard(todo: TodoItem, onLongPress: () -> Unit, onSwipeRight: () -> Unit) {
+fun TodoItemCard(todo: TodoItem, onLongPress: () -> Unit, onSwipeRight: () -> Unit, viewModel: TodoViewModel) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     var checked by remember { mutableStateOf(false) }
     Card(
@@ -65,9 +68,10 @@ fun TodoItemCard(todo: TodoItem, onLongPress: () -> Unit, onSwipeRight: () -> Un
             }
             Spacer(modifier = Modifier.weight(1f))
             Checkbox(
-                checked = checked,
+                checked = todo.isCompleted,
                 onCheckedChange = {
                     checked = it
+                    viewModel.toggleTodo(todo)
                 }
             )
         }
