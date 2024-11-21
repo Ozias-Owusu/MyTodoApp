@@ -73,6 +73,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
     val viewModel: TodoViewModel = viewModel()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    var completedTasks by remember { mutableStateOf(Pair(String, String)) }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -81,7 +82,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                     Box(
                         modifier = Modifier
-                            .size(80.dp) 
+                            .size(80.dp)
                             .clip(shape = CircleShape)
                             .background(Color(0xFF000000))
                             .clickable {  },
@@ -95,11 +96,11 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Spacer(modifier = Modifier.width(16.dp))
+//                    Spacer(modifier = Modifier.width(16.dp))
+//                    Spacer(modifier = Modifier.width(16.dp))
                     Spacer(modifier = Modifier.height(16.dp))
                     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center,
-                        )
+                    )
                     {
                         Text("User Name", modifier = Modifier.padding(bottom = 4.dp, top = 6.dp))
                         Text("Contact Info", fontSize = 12.sp)
@@ -188,7 +189,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     )
                 )
             },
-            ) { paddingValues ->
+        ) { paddingValues ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -220,7 +221,10 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                                         selectedTodo = todo
                                         showDeleteConfirmation = true
                                     },
-                                    viewModel = viewModel
+                                    viewModel = viewModel,
+                                    onChecked = {
+//                                       completedTasks = Pair(todo.text, todo.dateTime)
+                                    }
                                 )
                             }
                         }
@@ -292,27 +296,49 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
         }
     }
 }
-    fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
-        val calendar = Calendar.getInstance()
-        DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                TimePickerDialog(
-                    context,
-                    { _, hour, minute ->
-                        val selectedDateTime = "$dayOfMonth/${month + 1}/$year  $hour:$minute"
-                        onDateTimeSelected(selectedDateTime)
-                    },
-                    calendar.get(Calendar.HOUR_OF_DAY),
-                    calendar.get(Calendar.MINUTE),
-                    true
-                ).show()
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
-    }
+fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
+    val calendar = Calendar.getInstance()
+    DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            TimePickerDialog(
+                context,
+                { _, hour, minute ->
+                    val selectedDateTime = "$dayOfMonth/${month + 1}/$year  $hour:$minute"
+                    onDateTimeSelected(selectedDateTime)
+                },
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                true
+            ).show()
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    ).show()
+}
+
+//fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
+//    val calendar = Calendar.getInstance()
+//    DatePickerDialog(
+//        context,
+//        { _, year, month, dayOfMonth ->
+//            TimePickerDialog(
+//                context,
+//                { _, hour, minute ->
+//                    val selectedDateTime = "$dayOfMonth/${month + 1}/$year  $hour:$minute"
+//                    onDateTimeSelected(selectedDateTime)
+//                },
+//                calendar.get(Calendar.HOUR_OF_DAY),
+//                calendar.get(Calendar.MINUTE),
+//                true
+//            ).show()
+//        },
+//        calendar.get(Calendar.YEAR),
+//        calendar.get(Calendar.MONTH),
+//        calendar.get(Calendar.DAY_OF_MONTH)
+//    ).show()
+//}
 
 
 

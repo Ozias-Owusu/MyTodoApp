@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 
 class TodoViewModel : ViewModel() {
     val todoList = mutableStateListOf<TodoItem>()
+    private val  completedTodoList = mutableStateListOf<TodoItem>()
 
     fun addTodo(todo: TodoItem) {
         todoList.add(todo)
@@ -16,6 +17,9 @@ class TodoViewModel : ViewModel() {
 
     fun toggleTodo(todo: TodoItem) {
         todo.isCompleted = !todo.isCompleted
+        if (!todo.isCompleted) {
+            completedTodoList.add(todo)
+        }
     }
 
     fun updateTodo(oldTodo: TodoItem, newTodo: TodoItem) {

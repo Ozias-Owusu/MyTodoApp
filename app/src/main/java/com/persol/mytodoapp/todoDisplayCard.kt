@@ -30,7 +30,12 @@ import androidx.lifecycle.ViewModel
 
 @SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
-fun TodoItemCard(todo: TodoItem, onLongPress: () -> Unit, onSwipeRight: () -> Unit, viewModel: TodoViewModel) {
+fun TodoItemCard(
+    todo: TodoItem,
+    onLongPress: () -> Unit,
+    onSwipeRight: () -> Unit,
+    onChecked: () -> Unit,
+    viewModel: TodoViewModel) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     var checked by remember { mutableStateOf(false) }
     Card(
@@ -70,6 +75,7 @@ fun TodoItemCard(todo: TodoItem, onLongPress: () -> Unit, onSwipeRight: () -> Un
             Checkbox(
                 checked = todo.isCompleted,
                 onCheckedChange = {
+                    onChecked()
                     checked = it
                     viewModel.toggleTodo(todo)
                 }
