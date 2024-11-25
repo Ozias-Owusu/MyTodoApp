@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -64,7 +66,9 @@ data class TodoItem(val text:String, val dateTime:String, var isCompleted: Boole
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
+fun UiUpdate(
+    modifier: Modifier = Modifier
+) {
     var showTodoDetails by remember { mutableStateOf(false) }
     var todoList by remember { mutableStateOf(listOf<TodoItem>()) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
@@ -96,8 +100,8 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                             )
                         }
                     }
-//                    Spacer(modifier = Modifier.width(16.dp))
-//                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
                     Spacer(modifier = Modifier.height(16.dp))
                     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center,
                     )
@@ -116,8 +120,18 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("My Todos")
                 }
+
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {}) {
+                    Icon(
+                        Icons.Default.Menu,
+                        contentDescription = "Posts",
+                        modifier = Modifier.size(24.dp)
+                    )
+
+                }
+
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-                    navController.navigate("completedTodos_page")
+
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_check_circle_24),
@@ -128,7 +142,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     Text("Completed Todos")
                 }
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-                    navController.navigate("in_progressTodos_page")
+
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_loop_24),
@@ -139,7 +153,7 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                     Text("In-Progess Todos")
                 }
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-                    navController.navigate("settings_page")
+
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_settings_24),
@@ -257,7 +271,8 @@ fun UiUpdate(navController: NavController, modifier: Modifier = Modifier) {
                             showTodoDetails = false
                             editingTodo = null
                         },
-                        onCancel = { showTodoDetails = false }
+                        onCancel = { showTodoDetails = false },
+                        onUpdateTodo = {}
                     )
                 }
                 selectedTodo?.let { todo ->
@@ -317,28 +332,6 @@ fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
         calendar.get(Calendar.DAY_OF_MONTH)
     ).show()
 }
-
-//fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
-//    val calendar = Calendar.getInstance()
-//    DatePickerDialog(
-//        context,
-//        { _, year, month, dayOfMonth ->
-//            TimePickerDialog(
-//                context,
-//                { _, hour, minute ->
-//                    val selectedDateTime = "$dayOfMonth/${month + 1}/$year  $hour:$minute"
-//                    onDateTimeSelected(selectedDateTime)
-//                },
-//                calendar.get(Calendar.HOUR_OF_DAY),
-//                calendar.get(Calendar.MINUTE),
-//                true
-//            ).show()
-//        },
-//        calendar.get(Calendar.YEAR),
-//        calendar.get(Calendar.MONTH),
-//        calendar.get(Calendar.DAY_OF_MONTH)
-//    ).show()
-//}
 
 
 

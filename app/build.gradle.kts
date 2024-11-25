@@ -58,13 +58,27 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-
-    implementation(libs.converter.scalars)
-
-
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.okhttp)
-
+    implementation(libs.converter.scalars)
     implementation (libs.androidx.navigation.compose)
+
+    implementation(libs.coil3.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
+    implementation (libs.converter.gson)
+
+    implementation (libs.gson)
+
+//    implementation (libs.coil.compose)
+
+//    implementation (libs.coil.compose)
+
+
+
+
+
+
+
+
 }
