@@ -69,6 +69,7 @@ data class TodoItem(val text:String, val dateTime:String, var isCompleted: Boole
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UiUpdate(
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     var showTodoDetails by remember { mutableStateOf(false) }
@@ -80,7 +81,7 @@ fun UiUpdate(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var completedTasks by remember { mutableStateOf(Pair(String, String)) }
-    val navController = rememberNavController()
+//    val navController = rememberNavController()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -124,16 +125,16 @@ fun UiUpdate(
                     Text("My Todos")
                 }
 
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-                    navController.navigate("posts_Screen")
-                }) {
-                    Icon(
-                        Icons.Default.Menu,
-                        contentDescription = "Posts",
-                        modifier = Modifier.size(24.dp)
-                    )
-
-                }
+//                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+//                    navController.navigate("posts_Screen")
+//                }) {
+//                    Icon(
+//                        Icons.Default.Menu,
+//                        contentDescription = "Posts",
+//                        modifier = Modifier.size(24.dp)
+//                    )
+//
+//                }
 
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
 
@@ -146,16 +147,17 @@ fun UiUpdate(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Completed Todos")
                 }
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
 
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+                    navController.navigate("posts_Screen")
                 }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.baseline_loop_24),
-                        contentDescription = "In-Progess Todos",
+                        painter = painterResource(id = R.drawable.baseline_person_24),
+                        contentDescription = "People",
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("In-Progess Todos")
+                    Text("Posts")
                 }
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
 
@@ -209,16 +211,6 @@ fun UiUpdate(
                 )
             },
         ) { paddingValues ->
-
-            NavHost(navController = navController, startDestination = "home_Page") {
-                composable("home_Page") {
-                    UiUpdate()
-                }
-                composable("posts_Screen") {
-                    PostScreen(navController)
-                }
-            }
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
