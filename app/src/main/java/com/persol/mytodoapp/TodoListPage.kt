@@ -57,6 +57,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 
@@ -78,6 +80,7 @@ fun UiUpdate(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var completedTasks by remember { mutableStateOf(Pair(String, String)) }
+    val navController = rememberNavController()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -121,7 +124,9 @@ fun UiUpdate(
                     Text("My Todos")
                 }
 
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {}) {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+                    navController.navigate("posts_Screen")
+                }) {
                     Icon(
                         Icons.Default.Menu,
                         contentDescription = "Posts",
@@ -204,6 +209,16 @@ fun UiUpdate(
                 )
             },
         ) { paddingValues ->
+
+            NavHost(navController = navController, startDestination = "home_Page") {
+                composable("home_Page") {
+                    UiUpdate()
+                }
+                composable("posts_Screen") {
+                    PostScreen(navController)
+                }
+            }
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
