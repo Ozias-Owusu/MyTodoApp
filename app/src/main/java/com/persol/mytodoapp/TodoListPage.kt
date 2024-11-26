@@ -124,18 +124,6 @@ fun UiUpdate(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("My Todos")
                 }
-
-//                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-//                    navController.navigate("posts_Screen")
-//                }) {
-//                    Icon(
-//                        Icons.Default.Menu,
-//                        contentDescription = "Posts",
-//                        modifier = Modifier.size(24.dp)
-//                    )
-//
-//                }
-
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
 
                 }) {
@@ -149,7 +137,7 @@ fun UiUpdate(
                 }
 
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-                    navController.navigate("posts_Screen")
+                    navController.navigate("postsScreen")
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_person_24),
