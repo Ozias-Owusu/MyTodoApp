@@ -73,7 +73,7 @@ fun UiUpdate(
     modifier: Modifier = Modifier
 ) {
     var showTodoDetails by remember { mutableStateOf(false) }
-    var todoList by remember { mutableStateOf(listOf<TodoItem>()) }
+//    var todoList by remember { mutableStateOf(listOf<TodoItem>()) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
     var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
@@ -81,7 +81,7 @@ fun UiUpdate(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var completedTasks by remember { mutableStateOf(Pair(String, String)) }
-//    val navController = rememberNavController()
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -124,9 +124,8 @@ fun UiUpdate(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("My Todos")
                 }
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-
-                }) {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {})
+                {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_check_circle_24),
                         contentDescription = "Completed Todos",
@@ -147,9 +146,8 @@ fun UiUpdate(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Posts")
                 }
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
-
-                }) {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {})
+                {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_settings_24),
                         contentDescription = "Settings",
@@ -177,7 +175,8 @@ fun UiUpdate(
                             scope.launch {
                                 drawerState.open()
                             }
-                        }) {
+                        })
+                        {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_menu_24),
                                 contentDescription = "Menu"
@@ -231,9 +230,7 @@ fun UiUpdate(
                                         showDeleteConfirmation = true
                                     },
                                     viewModel = viewModel,
-                                    onChecked = {
-//                                       completedTasks = Pair(todo.text, todo.dateTime)
-                                    }
+                                    onChecked = {}
                                 )
                             }
                         }
@@ -327,9 +324,4 @@ fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
         calendar.get(Calendar.DAY_OF_MONTH)
     ).show()
 }
-
-
-
-
-
 

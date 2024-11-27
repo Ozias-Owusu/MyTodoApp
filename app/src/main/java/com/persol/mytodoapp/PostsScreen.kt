@@ -67,7 +67,7 @@ fun PostScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = (
-                                { navController.navigate("home Page") }
+                                { navController.navigate("homePage") }
                                 )
                     )
                     {Icon(
@@ -185,3 +185,5 @@ fun PostList(
         }
     }
 }
+
+
