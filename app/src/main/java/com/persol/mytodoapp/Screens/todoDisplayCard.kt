@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.Screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.Orientation
@@ -26,7 +26,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
+import com.persol.mytodoapp.variousM.TodoViewModel
 
 @SuppressLint("UseOfNonLambdaOffsetOverload")
 @Composable
@@ -35,7 +35,8 @@ fun TodoItemCard(
     onLongPress: () -> Unit,
     onSwipeRight: () -> Unit,
     onChecked: () -> Unit,
-    viewModel: TodoViewModel) {
+    viewModel: TodoViewModel
+) {
     var offsetX by remember { mutableFloatStateOf(0f) }
     var checked by remember { mutableStateOf(false) }
     Card(

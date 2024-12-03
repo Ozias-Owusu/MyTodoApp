@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.Screens
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -33,13 +33,15 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.persol.mytodoapp.R
+import java.util.*
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoDetailsCard(
     modifier: Modifier = Modifier, initialTodo: TodoItem? = null,
-    onAddTodo: (TodoItem) -> Unit, onCancel: () -> Unit,onUpdateTodo: (TodoItem) -> Unit,
+    onAddTodo: (TodoItem) -> Unit, onCancel: () -> Unit, onUpdateTodo: (TodoItem) -> Unit,
 ) {
     var todoText by remember { mutableStateOf("") }
     var selectedDateTime by remember { mutableStateOf("") }
@@ -132,7 +134,33 @@ fun TodoDetailsCard(
                 Text(text = it, color = Color(0xFFFD4F4F), fontSize = 15.sp)
                 Spacer(modifier = Modifier.padding(5.dp))
             }
-
+//            Row {
+//                Button(onClick = { onCancel() }) {
+//                    Text(text = "Cancel")
+//                }
+//                Spacer(modifier = Modifier.weight(1f))
+//                Button(onClick = {
+//                    if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
+//                        val newTodo = TodoItem(
+//                            // Assign a unique ID here, e.g., using a counter or a UUID
+//                            id = if (initialTodo != null) initialTodo.id else generateUniqueId(),
+//                            text = todoText,
+//                            dateTime = selectedDateTime,
+//                            isCompleted = initialTodo?.isCompleted ?: false
+//                        )
+//
+//                        if (initialTodo != null) {
+//                            onUpdateTodo(newTodo)
+//                        } else {
+//                            onAddTodo(newTodo)
+//                        }
+//                    } else {
+//                        errorMessage = "Please fill all fields"
+//                    }
+//                }) {
+//                    Text(text = if (initialTodo != null) "Update Todo" else "Add Todo")
+//                }
+//            }
             Row {
                 Button(onClick = { onCancel() }) {
                     Text(text = "Cancel")
@@ -140,12 +168,19 @@ fun TodoDetailsCard(
                 Spacer(modifier = Modifier.weight(1f))
                 Button(onClick = {
                     if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
+                        val newTodo = initialTodo?.copy(
+                            text = todoText,
+                            dateTime = selectedDateTime
+                        ) ?: TodoItem(
+                            id = generateUniqueId(),
+                            text = todoText,
+                            dateTime = selectedDateTime
+                        )
+
                         if (initialTodo != null) {
-                            // Update existing todo
-                            onUpdateTodo(TodoItem(todoText, selectedDateTime, initialTodo.isCompleted))
+                            onUpdateTodo(newTodo)
                         } else {
-                            // Add new todo
-                            onAddTodo(TodoItem(todoText, selectedDateTime))
+                            onAddTodo(newTodo)
                         }
                     } else {
                         errorMessage = "Please fill all fields"
@@ -154,7 +189,39 @@ fun TodoDetailsCard(
                     Text(text = if (initialTodo != null) "Update Todo" else "Add Todo")
                 }
             }
-
         }
-    }
+        }
+
 }
+
+
+fun generateUniqueId(): Int {
+    return Random().nextInt()
+}
+
+// Or, for a more robust UUID:
+fun generateUUID(): String {
+    return UUID.randomUUID().toString()
+}
+
+//            Row {
+//                Button(onClick = { onCancel() }) {
+//                    Text(text = "Cancel")
+//                }
+//                Spacer(modifier = Modifier.weight(1f))
+//                Button(onClick = {
+//                    if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
+//                        if (initialTodo != null) {
+//                            // Update existing todo
+//                            onUpdateTodo(TodoItem(todoText, selectedDateTime, initialTodo.isCompleted))
+//                        } else {
+//                            // Add new todo
+//                            onAddTodo(TodoItem(todoText, selectedDateTime))
+//                        }
+//                    } else {
+//                        errorMessage = "Please fill all fields"
+//                    }
+//                }) {
+//                    Text(text = if (initialTodo != null) "Update Todo" else "Add Todo")
+//                }
+//            }

@@ -1,11 +1,13 @@
 package com.persol.mytodoapp
 
+import com.persol.mytodoapp.Screens.CompletedTodos
+import com.persol.mytodoapp.Screens.PostScreen
+import com.persol.mytodoapp.Screens.Settings
+import com.persol.mytodoapp.Screens.UiUpdate
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController

@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.Screens
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -20,8 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -29,18 +28,22 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.rememberModalBottomSheetState
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,16 +56,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.persol.mytodoapp.dialogues.DeleteConfirmationDialog
+import com.persol.mytodoapp.dialogues.LongPressDialog
+import com.persol.mytodoapp.R
+import com.persol.mytodoapp.variousM.InMemoryTodoRepository
+import com.persol.mytodoapp.variousM.TodoViewModel
 import kotlinx.coroutines.launch
 
-data class TodoItem(val text:String, val dateTime:String, var isCompleted: Boolean = false)
+data class TodoItem(val id: Int,var text:String, val dateTime:String, var isCompleted: Boolean = false)
 
 
 
@@ -72,12 +75,15 @@ fun UiUpdate(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val viewModel = viewModel<TodoViewModel> {
+        TodoViewModel(InMemoryTodoRepository()) // Replace with your desired repository
+    }
     var showTodoDetails by remember { mutableStateOf(false) }
 //    var todoList by remember { mutableStateOf(listOf<TodoItem>()) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
     var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
-    val viewModel: TodoViewModel = viewModel()
+//    val viewModel: TodoViewModel = viewModel()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var completedTasks by remember { mutableStateOf(Pair(String, String)) }
@@ -270,17 +276,16 @@ fun UiUpdate(
                 selectedTodo?.let { todo ->
                     LongPressDialog(
                         todo = todo,
+                        viewModel = viewModel,
                         onEdit = {
-                            editingTodo = todo.copy()
-                            showTodoDetails = true
-                            selectedTodo = null
+                            viewModel.updateTodo(todo, todo.copy(text = todo.text))
                         },
                         onDelete = {
                             viewModel.deleteTodo(todo)
                         },
                         onDismiss = {
                             selectedTodo = null
-                        }
+                        },
                     )
                 }
                 if (showDeleteConfirmation && selectedTodo != null) {
@@ -324,4 +329,37 @@ fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
         calendar.get(Calendar.DAY_OF_MONTH)
     ).show()
 }
+
+@Composable
+fun EditTodoDialog(
+    todo: TodoItem,
+    onEditTodo: (TodoItem) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val updatedTodo by remember { mutableStateOf(todo.copy()) }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        TextField(
+            value = updatedTodo.text,
+            onValueChange = { updatedTodo.text = it },
+            label = { Text(text = "Todo Text") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(onClick = onDismiss) {
+                Text(text = "Cancel")
+            }
+            Button(onClick = { onEditTodo(updatedTodo) }) {
+                Text(text = "Save")
+            }
+        }
+    }
+}
+
+
 

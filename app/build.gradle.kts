@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+//    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+
 }
 
 android {
@@ -37,6 +39,11 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
 
 dependencies {
@@ -51,6 +58,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.play.services.fitness)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.support.annotations)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -62,8 +70,9 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.converter.scalars)
     implementation (libs.androidx.navigation.compose)
+    implementation (libs.androidx.material3.v111)
 
-    implementation(libs.coil3.coil.compose)
+    implementation(libs.coil.compose.v260)
    
 
     implementation (libs.converter.gson)
@@ -71,4 +80,12 @@ dependencies {
     implementation (libs.gson)
 
 
+//    val room_version = "2.6.1"
+//
+//    implementation(libs.androidx.room.runtime)
+//    annotationProcessor("androidx.room:room-compiler:$room_version")
+//    implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
+//    implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+
 }
+

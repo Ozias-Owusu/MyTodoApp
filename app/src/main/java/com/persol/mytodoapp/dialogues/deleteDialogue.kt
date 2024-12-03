@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.dialogues
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -6,31 +6,30 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 
 @Composable
-fun LongPressDialog(
-    todo: TodoItem,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    onDismiss: () -> Unit
+fun DeleteConfirmationDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "Actions for ${todo.text}") },
-        text = { Text(text = "Choose an action") },
+        title = { Text(text = "Delete Todo") },
+        text = { Text(text = "Are you sure you want to delete this todo?") },
         confirmButton = {
-            TextButton(onClick = {
-                onEdit()
-                onDismiss()
-            }) {
-                Text("Edit")
-            }
-        },
-        dismissButton = {
             TextButton(onClick = {
                 onDelete()
                 onDismiss()
             }) {
                 Text("Delete")
             }
-        }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                onDismiss()
+            }) {
+                Text("Cancel")
+            }
+        },
+
     )
 }
