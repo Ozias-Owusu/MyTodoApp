@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-//    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 
 }
 
@@ -80,12 +80,25 @@ dependencies {
     implementation (libs.gson)
 
 
-//    val room_version = "2.6.1"
-//
-//    implementation(libs.androidx.room.runtime)
-//    annotationProcessor("androidx.room:room-compiler:$room_version")
-//    implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
-//    implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
 
+    val room_version = "2.6.1"
+
+    implementation(libs.androidx.room.runtime)
+
+    ksp("androidx.room:room-compiler:$room_version")
+
+    annotationProcessor(libs.androidx.room.room.compiler)
+
+    implementation(libs.androidx.room.ktx)
+
+    implementation(libs.androidx.room.rxjava2)
+
+    implementation(libs.androidx.room.rxjava3)
+
+    implementation(libs.androidx.room.guava)
+
+    testImplementation(libs.androidx.room.testing)
+
+    implementation(libs.androidx.room.paging)
 }
 

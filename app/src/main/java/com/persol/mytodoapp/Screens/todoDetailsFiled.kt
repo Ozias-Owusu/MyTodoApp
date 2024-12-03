@@ -193,16 +193,11 @@ fun TodoDetailsCard(
         }
 
 }
-
-
 fun generateUniqueId(): Int {
     return Random().nextInt()
 }
 
-// Or, for a more robust UUID:
-fun generateUUID(): String {
-    return UUID.randomUUID().toString()
-}
+
 
 //            Row {
 //                Button(onClick = { onCancel() }) {
