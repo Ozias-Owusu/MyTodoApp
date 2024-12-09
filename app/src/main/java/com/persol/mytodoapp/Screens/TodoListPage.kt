@@ -58,14 +58,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.persol.mytodoapp.MyApplication
 import com.persol.mytodoapp.dialogues.DeleteConfirmationDialog
 import com.persol.mytodoapp.dialogues.LongPressDialog
 import com.persol.mytodoapp.R
 import com.persol.mytodoapp.variousM.InMemoryTodoRepository
 import com.persol.mytodoapp.variousM.TodoViewModel
 import kotlinx.coroutines.launch
-
-data class TodoItem(val id: Int,var text:String, val dateTime:String, var isCompleted: Boolean = false)
+@Entity(tableName = "todo_table")
+data class TodoItem(@PrimaryKey(autoGenerate = true) val id: Int = 0, var text:String, val dateTime:String, var isCompleted: Boolean = false)
 
 
 
@@ -76,19 +79,18 @@ fun UiUpdate(
     modifier: Modifier = Modifier
 ) {
     val viewModel = viewModel<TodoViewModel> {
-        TodoViewModel(InMemoryTodoRepository()) // Replace with your desired repository
+        TodoViewModel(InMemoryTodoRepository(), application = MyApplication()) // Replace with your desired repository
     }
     var showTodoDetails by remember { mutableStateOf(false) }
-//    var todoList by remember { mutableStateOf(listOf<TodoItem>()) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
     var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
-//    val viewModel: TodoViewModel = viewModel()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var completedTasks by remember { mutableStateOf(Pair(String, String)) }
 
-
+//    val viewModel: TodoViewModel = viewModel()
+//    var todoList by remember { mutableStateOf(listOf<TodoItem>()) }
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -220,11 +222,7 @@ fun UiUpdate(
                         }
                     } else {
                         LazyColumn(
-                            modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            reverseLayout = true,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier.fillMaxSize().padding(16.dp), reverseLayout = true, verticalArrangement = Arrangement.spacedBy(8.dp)
                         )
                         {
                             items(viewModel.todoList) { todo ->

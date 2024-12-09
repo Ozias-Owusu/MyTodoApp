@@ -1,5 +1,6 @@
 package com.persol.mytodoapp.variousM
 
+import android.app.Application
 import com.persol.mytodoapp.Screens.TodoItem
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -12,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.persol.mytodoapp.MyApplication
 import com.persol.mytodoapp.PostItemApplication
 import com.persol.mytodoapp.data.PostRepository
 import com.persol.mytodoapp.network.Post
@@ -58,13 +60,20 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
     }
 }
 
-class TodoViewModel(private val repository: TodoRepository) : ViewModel() {
+class TodoViewModel(private val repository: TodoRepository,application: Application) : ViewModel() {
     val todoList = mutableStateListOf<TodoItem>()
     private val  completedTodoList = mutableStateListOf<TodoItem>()
     private val _showEditDialog = MutableStateFlow<TodoItem?>(null)
     val showEditDialog: StateFlow<TodoItem?> = _showEditDialog
 
 
+    private val todoDao = (application as MyApplication).database.todoDao()
+
+    val allTodos: Flow<List<TodoItem>> = todoDao.getAllTodos()
+
+    fun insertTodo(todo: TodoItem) = viewModelScope.launch {
+        todoDao.insertTodo(todo)
+    }
 
     fun showEditDialog(todo: TodoItem) {
         _showEditDialog.value = todo
