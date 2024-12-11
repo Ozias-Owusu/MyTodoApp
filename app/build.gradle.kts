@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -62,13 +63,17 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.converter.scalars)
     implementation (libs.androidx.navigation.compose)
-    implementation ("androidx.compose.material3:material3:1.1.1")
+    implementation (libs.material3)
 
     implementation (libs.coil.compose.v250)
 
     implementation (libs.converter.gson)
 
     implementation (libs.gson)
+
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
 
 }
