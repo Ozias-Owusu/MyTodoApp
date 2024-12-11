@@ -62,7 +62,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 
-data class TodoItem(val text:String, val dateTime:String, var isCompleted: Boolean = false)
+data class TodoItem(var text:String, val dateTime:String, var isCompleted: Boolean = false)
 
 
 
@@ -93,10 +93,14 @@ fun UiUpdate(
                             .size(80.dp)
                             .clip(shape = CircleShape)
                             .background(Color(0xFF000000))
-                            .clickable {  },
+                            .clickable {
+                                navController.navigate("postsScreen")
+                            },
                         contentAlignment = Alignment.Center
                     ) {
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = {
+                            navController.navigate("postsScreen")
+                        }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_person_24),
                                 contentDescription = "Person",
@@ -136,7 +140,9 @@ fun UiUpdate(
                 }
 
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+
                     navController.navigate("postsScreen")
+
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_person_24),
@@ -270,6 +276,7 @@ fun UiUpdate(
                 selectedTodo?.let { todo ->
                     LongPressDialog(
                         todo = todo,
+                        viewModel = viewModel,
                         onEdit = {
                             editingTodo = todo.copy()
                             showTodoDetails = true

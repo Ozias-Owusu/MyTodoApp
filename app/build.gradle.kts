@@ -62,9 +62,9 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.converter.scalars)
     implementation (libs.androidx.navigation.compose)
+    implementation ("androidx.compose.material3:material3:1.1.1")
 
-    implementation(libs.coil3.coil.compose)
-   
+    implementation (libs.coil.compose.v250)
 
     implementation (libs.converter.gson)
 
