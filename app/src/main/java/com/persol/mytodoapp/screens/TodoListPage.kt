@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.screens
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -40,7 +38,6 @@ import androidx.compose.material3.rememberDrawerState
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,34 +50,47 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.persol.mytodoapp.dialogs.LongPressDialog
+import com.persol.mytodoapp.R
+import com.persol.mytodoapp.database.TodoDao
+import com.persol.mytodoapp.details.TodoDetailsCard
+import com.persol.mytodoapp.details.TodoItemCard
+import com.persol.mytodoapp.dialogs.DeleteConfirmationDialog
+import com.persol.mytodoapp.viewModels.TodoViewModel
+import com.persol.mytodoapp.viewModels.TodoViewModelFactory
 import kotlinx.coroutines.launch
 
-data class TodoItem(var text:String, val dateTime:String, var isCompleted: Boolean = false)
 
+@Entity(tableName = "todo_items")
+data class TodoItem(@PrimaryKey(autoGenerate = true) val id: Int =0,
+                    var text:String,
+                    val dateTime:String,
+                    var isCompleted: Boolean = false)
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UiUpdate(
     navController: NavController,
-    modifier: Modifier = Modifier
-) {
+    todoDao: TodoDao,
+    modifier: Modifier = Modifier,
+
+    ) {
     var showTodoDetails by remember { mutableStateOf(false) }
 //    var todoList by remember { mutableStateOf(listOf<TodoItem>()) }
     var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
     var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
     var showDeleteConfirmation by remember { mutableStateOf(false) }
-    val viewModel: TodoViewModel = viewModel()
+//    val viewModel: TodoViewModel = viewModel()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var completedTasks by remember { mutableStateOf(Pair(String, String)) }
+
+    val viewModel: TodoViewModel = viewModel(factory = TodoViewModelFactory(todoDao))
 
 
     ModalNavigationDrawer(

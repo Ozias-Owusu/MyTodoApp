@@ -1,6 +1,5 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.screens
 
-import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController

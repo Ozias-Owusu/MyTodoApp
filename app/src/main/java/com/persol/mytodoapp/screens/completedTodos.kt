@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

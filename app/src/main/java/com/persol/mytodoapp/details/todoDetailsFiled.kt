@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.details
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -33,13 +33,16 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.persol.mytodoapp.R
+import com.persol.mytodoapp.screens.TodoItem
+import com.persol.mytodoapp.screens.showDateTimePicker
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoDetailsCard(
     modifier: Modifier = Modifier, initialTodo: TodoItem? = null,
-    onAddTodo: (TodoItem) -> Unit, onCancel: () -> Unit,onUpdateTodo: (TodoItem) -> Unit,
+    onAddTodo: (TodoItem) -> Unit, onCancel: () -> Unit, onUpdateTodo: (TodoItem) -> Unit,
 ) {
     var todoText by remember { mutableStateOf("") }
     var selectedDateTime by remember { mutableStateOf("") }
@@ -142,10 +145,16 @@ fun TodoDetailsCard(
                     if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
                         if (initialTodo != null) {
                             // Update existing todo
-                            onUpdateTodo(TodoItem(todoText, selectedDateTime, initialTodo.isCompleted))
+                            onUpdateTodo(TodoItem(todoText, selectedDateTime, initialTodo.isCompleted.toString()))
                         } else {
                             // Add new todo
-                            onAddTodo(TodoItem(todoText, selectedDateTime))
+                            onAddTodo(
+                                TodoItem(
+                                todoText, selectedDateTime,
+                                dateTime = selectedDateTime,
+                                isCompleted = false
+                            )
+                            )
                         }
                     } else {
                         errorMessage = "Please fill all fields"

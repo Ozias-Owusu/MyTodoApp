@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.api
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

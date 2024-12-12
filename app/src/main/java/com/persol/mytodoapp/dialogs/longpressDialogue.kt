@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.dialogs
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.persol.mytodoapp.screens.TodoItem
+import com.persol.mytodoapp.viewModels.TodoViewModel
 
 //@Composable
 //fun LongPressDialog(

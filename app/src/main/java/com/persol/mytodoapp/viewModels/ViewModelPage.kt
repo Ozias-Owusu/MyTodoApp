@@ -1,4 +1,4 @@
-package com.persol.mytodoapp
+package com.persol.mytodoapp.viewModels
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -11,8 +11,14 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.persol.mytodoapp.appmodule.PostItemApplication
+import com.persol.mytodoapp.database.TodoDao
+import com.persol.mytodoapp.screens.TodoItem
 import com.persol.mytodoapp.data.PostRepository
 import com.persol.mytodoapp.network.Post
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.IOException
 
@@ -51,7 +57,7 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
     }
 }
 
-class TodoViewModel : ViewModel() {
+class TodoViewModel(private val todoDao: TodoDao) : ViewModel() {
     val todoList = mutableStateListOf<TodoItem>()
     private val  completedTodoList = mutableStateListOf<TodoItem>()
 
@@ -70,18 +76,36 @@ class TodoViewModel : ViewModel() {
         }
     }
 
-//    fun updateTodo(oldTodo: TodoItem, newTodo: TodoItem) {
-//        val index = todoList.indexOf(oldTodo)
-//        if (index != -1) {
-//            todoList[index] = newTodo.copy(isCompleted = oldTodo.isCompleted)
-//        }
-//    }
-
     fun updateTodo(oldTodo: TodoItem, newTodo: TodoItem) {
         val index = todoList.indexOf(oldTodo)
         if (index != -1) {
             todoList[index] = newTodo.copy(isCompleted = oldTodo.isCompleted)
 
+        }
+    }
+
+    val DatabaseTodoList: StateFlow<List<TodoItem>> =
+        todoDao.getAllTodos().stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
+
+    fun DatabaseaAddTodo(todo: TodoItem) {
+        viewModelScope.launch {
+            todoDao.insertTodo(todo)
+        }
+    }
+
+    fun DatabaseUpdateTodo(existingTodo: TodoItem, newTodo: TodoItem) {
+        viewModelScope.launch {
+            todoDao.updateTodo(newTodo.copy(id = existingTodo.id))
+        }
+    }
+
+    fun DatabaseDeleteTodo(todo: TodoItem) {
+        viewModelScope.launch {
+            todoDao.deleteTodo(todo)
         }
     }
 
