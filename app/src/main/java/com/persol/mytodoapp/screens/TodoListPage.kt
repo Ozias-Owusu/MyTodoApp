@@ -63,6 +63,9 @@ import com.persol.mytodoapp.dialogs.DeleteConfirmationDialog
 import com.persol.mytodoapp.viewModels.TodoViewModel
 import com.persol.mytodoapp.viewModels.TodoViewModelFactory
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @Entity(tableName = "todo_items")
@@ -138,7 +141,9 @@ fun UiUpdate(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("My Todos")
                 }
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {})
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+                    navController.navigate("completedTodosPage")
+                })
                 {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_check_circle_24),
@@ -273,6 +278,7 @@ fun UiUpdate(
                         onAddTodo = { newTodo ->
                             if (editingTodo != null) {
                                 viewModel.updateTodo(editingTodo!!, newTodo)
+//
                             } else {
                                 viewModel.addTodo(newTodo)
                             }
@@ -320,8 +326,15 @@ fun UiUpdate(
         }
     }
 }
-fun showDateTimePicker(context: Context, onDateTimeSelected: (String) -> Unit) {
+fun showDateTimePicker(context: Context,initialDateTime: String, onDateTimeSelected: (String) -> Unit) {
     val calendar = Calendar.getInstance()
+    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+
+    try {
+        calendar.time = sdf.parse(initialDateTime) ?: Date()
+    } catch (e: Exception) {
+        calendar.time = Date()
+    }
     DatePickerDialog(
         context,
         { _, year, month, dayOfMonth ->

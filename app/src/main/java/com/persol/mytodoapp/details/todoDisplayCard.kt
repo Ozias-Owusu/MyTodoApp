@@ -39,7 +39,7 @@ fun TodoItemCard(
     viewModel: TodoViewModel
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
-    var checked by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,15 +62,17 @@ fun TodoItemCard(
                 )
             }
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically){
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "Todo: ${todo.text}",
+                Text(
+                    text = "Todo: ${todo.text}",
                     fontSize = 18.sp,
-                    textDecoration = if (checked) TextDecoration.LineThrough else TextDecoration.None
+                    textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None
                 )
-                Text(text = "Due: ${todo.dateTime}",
+                Text(
+                    text = "Due: ${todo.dateTime}",
                     fontSize = 14.sp,
-                    textDecoration = if (checked) TextDecoration.LineThrough else TextDecoration.None
+                    textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -78,7 +80,6 @@ fun TodoItemCard(
                 checked = todo.isCompleted,
                 onCheckedChange = {
                     onChecked()
-                    checked = it
                     viewModel.toggleTodo(todo)
                 }
             )

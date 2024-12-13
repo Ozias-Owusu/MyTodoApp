@@ -18,6 +18,7 @@ import com.persol.mytodoapp.data.PostRepository
 import com.persol.mytodoapp.network.Post
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -61,27 +62,54 @@ class TodoViewModel(private val todoDao: TodoDao) : ViewModel() {
     val todoList = mutableStateListOf<TodoItem>()
     private val  completedTodoList = mutableStateListOf<TodoItem>()
 
+    init {
+        viewModelScope.launch {
+            todoDao.getAllTodos().collect { todosFromDb ->
+                todoList.clear()
+                todoList.addAll(todosFromDb.filter { !it.isCompleted })
+                completedTodoList.clear()
+                completedTodoList.addAll(todosFromDb.filter { it.isCompleted })
+            }
+        }
+    }
+
     fun addTodo(todo: TodoItem) {
         todoList.add(todo)
+        databaseAddTodo(todo)
     }
 
     fun deleteTodo(todo: TodoItem) {
         todoList.remove(todo)
+        databaseDeleteTodo(todo)
     }
 
     fun toggleTodo(todo: TodoItem) {
         todo.isCompleted = !todo.isCompleted
-        if (!todo.isCompleted) {
+        if (todo.isCompleted) {
             completedTodoList.add(todo)
+            todoList.remove(todo)
+        } else {
+            todoList.add(todo)
+            completedTodoList.remove(todo)
         }
+        databaseUpdateTodo(todo, todo)
+//        todo.isCompleted = !todo.isCompleted
+//        if (!todo.isCompleted) {
+//            completedTodoList.add(todo)
+//        }
     }
 
     fun updateTodo(oldTodo: TodoItem, newTodo: TodoItem) {
         val index = todoList.indexOf(oldTodo)
         if (index != -1) {
             todoList[index] = newTodo.copy(isCompleted = oldTodo.isCompleted)
-
+            databaseUpdateTodo(oldTodo, newTodo) // Ensure persistence
         }
+//        val index = todoList.indexOf(oldTodo)
+//        if (index != -1) {
+//            todoList[index] = newTodo.copy(isCompleted = oldTodo.isCompleted)
+//
+//        }
     }
 
     val DatabaseTodoList: StateFlow<List<TodoItem>> =
@@ -91,19 +119,19 @@ class TodoViewModel(private val todoDao: TodoDao) : ViewModel() {
             emptyList()
         )
 
-    fun DatabaseaAddTodo(todo: TodoItem) {
+    fun databaseAddTodo(todo: TodoItem) {
         viewModelScope.launch {
             todoDao.insertTodo(todo)
         }
     }
 
-    fun DatabaseUpdateTodo(existingTodo: TodoItem, newTodo: TodoItem) {
+    fun databaseUpdateTodo(existingTodo: TodoItem, newTodo: TodoItem) {
         viewModelScope.launch {
             todoDao.updateTodo(newTodo.copy(id = existingTodo.id))
         }
     }
 
-    fun DatabaseDeleteTodo(todo: TodoItem) {
+    fun databaseDeleteTodo(todo: TodoItem) {
         viewModelScope.launch {
             todoDao.deleteTodo(todo)
         }

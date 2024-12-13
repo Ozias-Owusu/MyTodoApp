@@ -86,7 +86,7 @@ fun TodoDetailsCard(
             ){
                 InputChip(
                     onClick = {
-                        showDateTimePicker(context) { dateTime ->
+                        showDateTimePicker(context, initialDateTime = selectedDateTime) { dateTime ->
                             selectedDateTime = dateTime
                         }
                     },
@@ -169,34 +169,6 @@ fun TodoDetailsCard(
                 }
             }
 
-
-//            Row {
-//                Button(onClick = { onCancel() }) {
-//                    Text(text = "Cancel")
-//                }
-//                Spacer(modifier = Modifier.weight(1f))
-//                Button(onClick = {
-//                    if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
-//                        if (initialTodo != null) {
-//                            // Update existing todo
-//                            onUpdateTodo(TodoItem(todoText, selectedDateTime, initialTodo.isCompleted.toString()))
-//                        } else {
-//                            // Add new todo
-//                            onAddTodo(
-//                                TodoItem(
-//                                todoText, selectedDateTime,
-//                                dateTime = selectedDateTime,
-//                                isCompleted = false
-//                            )
-//                            )
-//                        }
-//                    } else {
-//                        errorMessage = "Please fill all fields"
-//                    }
-//                }) {
-//                    Text(text = if (initialTodo != null) "Update Todo" else "Add Todo")
-//                }
-//            }
 
         }
     }
