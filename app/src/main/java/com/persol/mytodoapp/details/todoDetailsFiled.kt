@@ -135,7 +135,6 @@ fun TodoDetailsCard(
                 Text(text = it, color = Color(0xFFFD4F4F), fontSize = 15.sp)
                 Spacer(modifier = Modifier.padding(5.dp))
             }
-
             Row {
                 Button(onClick = { onCancel() }) {
                     Text(text = "Cancel")
@@ -145,15 +144,21 @@ fun TodoDetailsCard(
                     if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
                         if (initialTodo != null) {
                             // Update existing todo
-                            onUpdateTodo(TodoItem(todoText, selectedDateTime, initialTodo.isCompleted.toString()))
+                            onUpdateTodo(
+                                TodoItem(
+                                    text = todoText,
+                                    dateTime = selectedDateTime,
+                                    isCompleted = initialTodo.isCompleted
+                                )
+                            )
                         } else {
                             // Add new todo
                             onAddTodo(
                                 TodoItem(
-                                todoText, selectedDateTime,
-                                dateTime = selectedDateTime,
-                                isCompleted = false
-                            )
+                                    text = todoText,
+                                    dateTime = selectedDateTime,
+                                    isCompleted = false
+                                )
                             )
                         }
                     } else {
@@ -163,6 +168,35 @@ fun TodoDetailsCard(
                     Text(text = if (initialTodo != null) "Update Todo" else "Add Todo")
                 }
             }
+
+
+//            Row {
+//                Button(onClick = { onCancel() }) {
+//                    Text(text = "Cancel")
+//                }
+//                Spacer(modifier = Modifier.weight(1f))
+//                Button(onClick = {
+//                    if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
+//                        if (initialTodo != null) {
+//                            // Update existing todo
+//                            onUpdateTodo(TodoItem(todoText, selectedDateTime, initialTodo.isCompleted.toString()))
+//                        } else {
+//                            // Add new todo
+//                            onAddTodo(
+//                                TodoItem(
+//                                todoText, selectedDateTime,
+//                                dateTime = selectedDateTime,
+//                                isCompleted = false
+//                            )
+//                            )
+//                        }
+//                    } else {
+//                        errorMessage = "Please fill all fields"
+//                    }
+//                }) {
+//                    Text(text = if (initialTodo != null) "Update Todo" else "Add Todo")
+//                }
+//            }
 
         }
     }

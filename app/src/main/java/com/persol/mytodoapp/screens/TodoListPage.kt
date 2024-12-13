@@ -66,7 +66,7 @@ import kotlinx.coroutines.launch
 
 
 @Entity(tableName = "todo_items")
-data class TodoItem(@PrimaryKey(autoGenerate = true) val id: Int =0,
+data class TodoItem(@PrimaryKey(autoGenerate = true) val id: Int = 0,
                     var text:String,
                     val dateTime:String,
                     var isCompleted: Boolean = false)
