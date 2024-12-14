@@ -48,7 +48,8 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("completedTodosPage") {
-                        CompletedTodos(navController,onClearCompleted = {}, todoList = listOf())
+//                        CompletedTodos(navController,onClearCompleted = {}, todoList = listOf())
+                        CompletedTodos(viewModel = viewModel,navController)
                     }
                     composable("settingsPage") {
                         Settings(navController)

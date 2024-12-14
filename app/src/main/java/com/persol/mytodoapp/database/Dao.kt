@@ -18,4 +18,7 @@ interface TodoDao {
 
     @Query("SELECT * FROM todo_items ORDER BY id DESC")
     fun getAllTodos(): Flow<List<TodoItem>>
+
+    @Query("DELETE FROM todo_items WHERE isCompleted = 1")
+    suspend fun deleteAllCompletedTodos()
 }

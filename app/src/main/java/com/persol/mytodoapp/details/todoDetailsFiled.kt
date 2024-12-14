@@ -148,7 +148,7 @@ fun TodoDetailsCard(
                                 TodoItem(
                                     text = todoText,
                                     dateTime = selectedDateTime,
-                                    isCompleted = initialTodo.isCompleted
+                                    isCompleted = initialTodo.isCompleted,
                                 )
                             )
                         } else {
