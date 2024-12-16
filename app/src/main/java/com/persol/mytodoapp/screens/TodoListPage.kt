@@ -46,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,6 +66,7 @@ import com.persol.mytodoapp.R
 import com.persol.mytodoapp.database.TodoDao
 import com.persol.mytodoapp.details.TodoDetailsCard
 import com.persol.mytodoapp.details.TodoItemCard
+import com.persol.mytodoapp.dialogs.EditTodoDialog
 //import com.persol.mytodoapp.dialogs.DeleteConfirmationDialog
 import com.persol.mytodoapp.viewModels.TodoViewModel
 import com.persol.mytodoapp.viewModels.TodoViewModelFactory
@@ -94,16 +96,20 @@ fun UiUpdate(
 
     ) {
     val coroutineScope = rememberCoroutineScope()
-    var showTodoDetails by remember { mutableStateOf(false) }
-    var selectedTodo by remember { mutableStateOf<TodoItem?>(null) }
-    var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
-    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var showTodoDetails by rememberSaveable { mutableStateOf(false) }
+    var selectedTodo = TodoItem(id = 0, text = "", dateTime = "", isCompleted = false)
+    var editingTodo by rememberSaveable { mutableStateOf<TodoItem?>(null) }
+    var showDeleteConfirmation by rememberSaveable { mutableStateOf(false) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val viewModel: TodoViewModel = viewModel(factory = TodoViewModelFactory(todoDao))
     var showCompleteDeleteConfirmation by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    var isCheckboxChecked by rememberSaveable  { mutableStateOf(false) }
+    var showOptions by rememberSaveable { mutableStateOf(false) }
+    var onShowEditDialog by rememberSaveable { mutableStateOf(false) }
 
 
 
@@ -258,13 +264,20 @@ fun UiUpdate(
                             items(viewModel.todoList) { todo ->
                                 TodoItemCard(
                                     todo = todo,
-                                    onLongPress = { selectedTodo = todo },
+                                    onLongPress = {
+                                        selectedTodo = todo
+                                        showOptions = true
+                                        println(selectedTodo.toString())
+                                                  },
                                     onSwipeRight = {
                                         selectedTodo = todo
                                         showDeleteConfirmation = true
                                     },
                                     viewModel = viewModel,
-                                    onChecked = {}
+                                    onChecked = {
+                                        selectedTodo = todo
+                                        isCheckboxChecked = true
+                                    }
                                 )
                             }
                         }
@@ -275,7 +288,6 @@ fun UiUpdate(
                         .align(Alignment.BottomEnd)
                         .padding(30.dp),
                     onClick = {
-                        selectedTodo = null
                         showTodoDetails = true
                     },
                 ) {
@@ -310,33 +322,46 @@ fun UiUpdate(
                         onUpdateTodo = {}
                     )
                 }
-                selectedTodo?.let { todo ->
-                    LongPressDialog(
-                        todo = todo,
-                        viewModel = viewModel,
-                        onEdit = {
-                            editingTodo = todo.copy()
-                            showTodoDetails = true
-                            selectedTodo = null
-                        },
-                        onDelete = {
-                            scope.launch {
-                                val success = viewModel.deleteTodo(todo)
-                                if (success) {
-                                    snackbarHostState.showSnackbar("Todo successfully deleted!")
-                                } else {
-                                    snackbarHostState.showSnackbar("Failed to delete the todo. Please try again.")
+                if (showOptions) {
+                        LongPressDialog(
+                            todo = selectedTodo,
+                            viewModel = viewModel,
+                            onEdit = {
+                                editingTodo = selectedTodo.copy()
+                                showTodoDetails = true
+                            },
+                            onDelete = {
+                                scope.launch {
+                                    val success = viewModel.deleteTodo(selectedTodo)
+                                    if (success) {
+                                        snackbarHostState.showSnackbar("Todo successfully deleted!")
+                                    } else {
+                                        snackbarHostState.showSnackbar("Failed to delete the todo. Please try again.")
+                                    }
                                 }
+                            },
+                            onDismiss = {
+                                showOptions = false
+                            },
+                            onShowEditDialog = {
+                                showOptions = false
+                                onShowEditDialog = true
                             }
-                            selectedTodo = null
+                        )
+                }
+                if (onShowEditDialog) {
+                    EditTodoDialog(
+                        todo = selectedTodo,
+                        onEditTodo = {
+                            viewModel.updateTodo(selectedTodo, it)
                         },
                         onDismiss = {
-                            selectedTodo = null
+                            onShowEditDialog = false
                         }
                     )
                 }
 
-                if (showDeleteConfirmation && selectedTodo != null) {
+                if (showDeleteConfirmation) {
                     AlertDialog(
                         onDismissRequest = { showDeleteConfirmation = false },
                         title = { Text("Delete Todo") },
@@ -361,7 +386,7 @@ fun UiUpdate(
                     )
                 }
 
-                if (showCompleteDeleteConfirmation && selectedTodo != null) {
+                if (showCompleteDeleteConfirmation ) {
                     AlertDialog(
                         onDismissRequest = { showCompleteDeleteConfirmation = false },
                         title = { Text("Confirm Complete Deletion") },
@@ -370,13 +395,12 @@ fun UiUpdate(
                             TextButton(
                                 onClick = {
                                     coroutineScope.launch {
-                                        val success = viewModel.deleteTodo(selectedTodo!!)
+                                        val success = viewModel.deleteTodo(selectedTodo)
                                         if (success) {
                                             snackbarHostState.showSnackbar("Todo successfully deleted!")
                                         } else {
                                             snackbarHostState.showSnackbar("Failed to delete the todo. Please try again.")
                                         }
-                                        selectedTodo = null
                                         showCompleteDeleteConfirmation = false
                                     }
                                 }
@@ -393,6 +417,36 @@ fun UiUpdate(
                         }
                     )
                 }
+            }
+            if (isCheckboxChecked){
+                AlertDialog(
+                    onDismissRequest = { isCheckboxChecked = false },
+                    title = { Text("Confirm Completion") },
+                    text = {
+                        Text(
+                            "Are you sure you want to set the task: ${selectedTodo.text} as completed?"
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            isCheckboxChecked = false
+                            scope.launch {
+                                viewModel.toggleTodo(selectedTodo)
+                                snackbarHostState.showSnackbar(
+                                    message = "Task Cmpleted Successfully"
+                                )
+                            }
+
+                        }) {
+                            Text("Confirm")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { isCheckboxChecked = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
             }
         }
     }
