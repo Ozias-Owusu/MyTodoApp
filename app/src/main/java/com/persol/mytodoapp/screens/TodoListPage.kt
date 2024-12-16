@@ -226,11 +226,11 @@ fun UiUpdate(
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(
+                    colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 )
-            },    snackbarHost = { SnackbarHost(snackbarHostState) }
+            },    snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { paddingValues ->
             Box(
                 modifier = Modifier

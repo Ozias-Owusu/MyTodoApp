@@ -56,17 +56,6 @@ fun checkTime( dateTime: String, run: () -> Unit) {
 fun showNotification(context: Context, todoText: String, todoTime: String) {
     val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-//        val channelId = "todo_channel_id"
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val channel = NotificationChannel(
-//                channelId,
-//                "Todo Notifications",
-//                NotificationManager.IMPORTANCE_DEFAULT
-//            )
-//            notificationManager.createNotificationChannel(channel)
-//        }
-
     val notification = NotificationCompat.Builder(context, "todo_channel_id")
         .setContentTitle("Todo Reminder")
         .setContentText("$todoText - $todoTime")
