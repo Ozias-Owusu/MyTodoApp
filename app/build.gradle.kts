@@ -79,7 +79,7 @@ dependencies {
     implementation (libs.androidx.room.ktx)
     ksp (libs.androidx.room.compiler)
 
-    implementation ("androidx.work:work-runtime:2.8.1")
+    implementation (libs.androidx.work.runtime)
 
 
 }
