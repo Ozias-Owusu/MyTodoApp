@@ -26,14 +26,12 @@ class MainActivity : ComponentActivity() {
             val database = AppModule.provideDatabase(this)
             val todoDao = database.todoDao()
 
-            // Initialize ViewModel
             viewModel = ViewModelProvider(
                 this,
                 TodoViewModelFactory(todoDao)
             )[TodoViewModel::class.java]
 
             val navController = rememberNavController()
-
 
             NavHost(
                 navController = navController,
@@ -48,7 +46,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("completedTodosPage") {
-//                        CompletedTodos(navController,onClearCompleted = {}, todoList = listOf())
                         CompletedTodos(viewModel = viewModel,navController)
                     }
                     composable("settingsPage") {
@@ -57,7 +54,6 @@ class MainActivity : ComponentActivity() {
                     composable("postsScreen") {
                         PostScreen(navController)
                     }
-
                 }
             )
         }
