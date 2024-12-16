@@ -21,4 +21,9 @@ interface TodoDao {
 
     @Query("DELETE FROM todo_items WHERE isCompleted = 1")
     suspend fun deleteAllCompletedTodos()
+
+    //get dateTime
+    @Query("SELECT * FROM todo_items WHERE dateTime = :dateTime")
+    suspend fun getTodosByDate(dateTime: String): List<TodoItem>
+
 }

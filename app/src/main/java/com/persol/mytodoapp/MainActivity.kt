@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
         }
     }
     // Create the notification channel
-    fun notificationChannel () {
+    private fun createNotificationChannel () {
         val notificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -115,11 +115,7 @@ class MainActivity : ComponentActivity() {
                 val isGranted = it.value
                 if (isGranted) {
                     // Permission is granted. Continue the action or workflow in your app.
-                    showNotification(
-                        this,
-                        "You have a task to complete!",
-                        "Now"
-                    )
+                    createNotificationChannel()
                 } else {
                     // Explain to the user that the feature is unavailable without this permission.
                     AlertDialog.Builder(this)

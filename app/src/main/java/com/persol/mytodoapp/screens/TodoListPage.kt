@@ -76,7 +76,8 @@ import java.util.Locale
 
 
 @Entity(tableName = "todo_items")
-data class TodoItem(@PrimaryKey(autoGenerate = true) val id: Int = 0,
+data class TodoItem(@PrimaryKey(autoGenerate = true)
+                    val id: Int = 0,
                     var text:String,
                     val dateTime:String,
                     var isCompleted: Boolean = false,
@@ -292,7 +293,7 @@ fun UiUpdate(
                             scope.launch {
                                 val success = viewModel.addTodo(newTodo)
                                 if (success) {
-                                    scheduleTodoNotification(context = context,newTodo.text, newTodo.dateTime)
+//                                    scheduleTodoNotification(context = context,newTodo.text, newTodo.dateTime)
                                     snackbarHostState.showSnackbar("Todo successfully added!")
                                 } else {
                                     snackbarHostState.showSnackbar("Todo could not be added, please try again.")
