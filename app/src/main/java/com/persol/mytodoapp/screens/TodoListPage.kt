@@ -331,14 +331,8 @@ fun UiUpdate(
                                 showTodoDetails = true
                             },
                             onDelete = {
-                                scope.launch {
-                                    val success = viewModel.deleteTodo(selectedTodo)
-                                    if (success) {
-                                        snackbarHostState.showSnackbar("Todo successfully deleted!")
-                                    } else {
-                                        snackbarHostState.showSnackbar("Failed to delete the todo. Please try again.")
-                                    }
-                                }
+                                showDeleteConfirmation = true
+                                showOptions = false
                             },
                             onDismiss = {
                                 showOptions = false
@@ -370,7 +364,14 @@ fun UiUpdate(
                             TextButton(
                                 onClick = {
                                     showDeleteConfirmation = false
-                                    showCompleteDeleteConfirmation = true // Trigger second confirmation dialog
+                                    scope.launch {
+                                        val success = viewModel.deleteTodo(selectedTodo)
+                                        if (success) {
+                                            snackbarHostState.showSnackbar("Todo successfully deleted!")
+                                        } else {
+                                            snackbarHostState.showSnackbar("Failed to delete the todo. Please try again.")
+                                        }
+                                    }
                                 }
                             ) {
                                 Text("Delete")

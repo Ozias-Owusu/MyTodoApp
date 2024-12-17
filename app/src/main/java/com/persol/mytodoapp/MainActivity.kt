@@ -26,6 +26,7 @@ import com.persol.mytodoapp.screens.CompletedTodos
 import com.persol.mytodoapp.screens.PostScreen
 import com.persol.mytodoapp.screens.Settings
 import com.persol.mytodoapp.screens.UiUpdate
+import com.persol.mytodoapp.ui.theme.MyTodoAppTheme
 import com.persol.mytodoapp.viewModels.TodoViewModel
 import com.persol.mytodoapp.viewModels.TodoViewModelFactory
 import com.persol.mytodoapp.workers.showNotification
@@ -49,29 +50,31 @@ class MainActivity : ComponentActivity() {
 
             val navController = rememberNavController()
 
-            NavHost(
-                navController = navController,
-                startDestination = "homePage",
-                builder =
-                {
-                    composable("homePage") {
-                        UiUpdate(
-                            todoDao = todoDao,
-                            navController = navController,
-                            modifier = Modifier
-                        )
+            MyTodoAppTheme {
+                NavHost(
+                    navController = navController,
+                    startDestination = "homePage",
+                    builder =
+                    {
+                        composable("homePage") {
+                            UiUpdate(
+                                todoDao = todoDao,
+                                navController = navController,
+                                modifier = Modifier
+                            )
+                        }
+                        composable("completedTodosPage") {
+                            CompletedTodos(viewModel = viewModel, navController)
+                        }
+                        composable("settingsPage") {
+                            Settings(navController)
+                        }
+                        composable("postsScreen") {
+                            PostScreen(navController)
+                        }
                     }
-                    composable("completedTodosPage") {
-                        CompletedTodos(viewModel = viewModel,navController)
-                    }
-                    composable("settingsPage") {
-                        Settings(navController)
-                    }
-                    composable("postsScreen") {
-                        PostScreen(navController)
-                    }
-                }
-            )
+                )
+            }
         }
     }
     // Create the notification channel
