@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
             val channel = NotificationChannel(
                 "todo_channel_id",
                 "Todo Notifications",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(channel)
         }
