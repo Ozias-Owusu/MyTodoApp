@@ -80,6 +80,11 @@ dependencies {
     ksp (libs.androidx.room.compiler)
 
     implementation (libs.androidx.work.runtime)
+    //extended icons
+    implementation (libs.androidx.material.icons.extended)
+
+
+
 
 
 }

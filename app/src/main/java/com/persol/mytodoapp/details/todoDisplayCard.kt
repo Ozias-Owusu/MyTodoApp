@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -69,7 +70,6 @@ fun TodoItemCard(
     SwipeToDismissBox(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(end = 10.dp)
             .animateContentSize(
                 animationSpec = tween(
                     durationMillis = 300,
@@ -165,20 +165,30 @@ fun TodoItemCard(
                         onLongClick = onLongPress,
                     )
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(
-                            text = "Todo: ${todo.text}",
-                            fontSize = 18.sp,
-                            textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None
-                        )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                    Column() {
+                        Box (
+                            modifier = Modifier
+                                .width(290.dp)
+                        ) {
+                            Text(
+                                text = "Todo: ${todo.text}",
+                                fontSize = 18.sp,
+                                textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None
+                            )
+                        }
                         Text(
                             text = "Due: ${todo.dateTime}",
                             fontSize = 14.sp,
                             textDecoration = if (todo.isCompleted) TextDecoration.LineThrough else TextDecoration.None
                         )
                     }
-                    Spacer(modifier = Modifier.weight(1f))
                     Checkbox(
                         checked = todo.isCompleted,
                         onCheckedChange = {

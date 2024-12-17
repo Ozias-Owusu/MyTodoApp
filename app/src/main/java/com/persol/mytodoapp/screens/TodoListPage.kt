@@ -305,7 +305,13 @@ fun UiUpdate(
                             scope.launch {
                                 val success = viewModel.addTodo(newTodo)
                                 if (success) {
-//                                    scheduleTodoNotification(context = context,newTodo.text, newTodo.dateTime)
+                                    //convert date to time in milliseconds format
+                                    val format = "dd/MM/yyyy  HH:mm"
+                                    val date = convertDateStringToMilliseconds(newTodo.dateTime, format)
+                                    println(date)
+                                    println(System.currentTimeMillis())
+
+                                    scheduleTodoNotification(context = context, newTodo.text, date)
                                     snackbarHostState.showSnackbar("Todo successfully added!")
                                 } else {
                                     snackbarHostState.showSnackbar("Todo could not be added, please try again.")
@@ -479,5 +485,11 @@ fun showDateTimePicker(context: Context,initialDateTime: String, onDateTimeSelec
         calendar.get(Calendar.MONTH),
         calendar.get(Calendar.DAY_OF_MONTH)
     ).show()
+}
+
+fun convertDateStringToMilliseconds(dateString: String, format: String): Long {
+    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    val date = dateFormat.parse(dateString)
+    return date?.time ?: 0 // Handle null case with 0 or throw an exception
 }
 

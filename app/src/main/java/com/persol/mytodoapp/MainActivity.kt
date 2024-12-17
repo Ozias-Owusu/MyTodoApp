@@ -18,21 +18,27 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.persol.mytodoapp.appmodule.AppModule
 import com.persol.mytodoapp.screens.CompletedTodos
+import com.persol.mytodoapp.screens.PinMainScreen
 import com.persol.mytodoapp.screens.PostScreen
 import com.persol.mytodoapp.screens.Settings
+import com.persol.mytodoapp.screens.TodoItem
 import com.persol.mytodoapp.screens.UiUpdate
 import com.persol.mytodoapp.ui.theme.MyTodoAppTheme
+import com.persol.mytodoapp.viewModels.PinScreenViewModel
 import com.persol.mytodoapp.viewModels.TodoViewModel
 import com.persol.mytodoapp.viewModels.TodoViewModelFactory
+import com.persol.mytodoapp.workers.scheduleTodoNotification
 import com.persol.mytodoapp.workers.showNotification
 
 class MainActivity : ComponentActivity() {
-    private lateinit var viewModel: TodoViewModel
+
+    private lateinit var todoViewModel: TodoViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -43,7 +49,7 @@ class MainActivity : ComponentActivity() {
             val database = AppModule.provideDatabase(this)
             val todoDao = database.todoDao()
 
-            viewModel = ViewModelProvider(
+            todoViewModel = ViewModelProvider(
                 this,
                 TodoViewModelFactory(todoDao)
             )[TodoViewModel::class.java]
@@ -53,9 +59,12 @@ class MainActivity : ComponentActivity() {
             MyTodoAppTheme {
                 NavHost(
                     navController = navController,
-                    startDestination = "homePage",
+                    startDestination = "pinPage",
                     builder =
                     {
+                        composable("pinPage") {
+                            PinMainScreen(navController)
+                        }
                         composable("homePage") {
                             UiUpdate(
                                 todoDao = todoDao,
@@ -64,7 +73,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("completedTodosPage") {
-                            CompletedTodos(viewModel = viewModel, navController)
+                            CompletedTodos(viewModel = todoViewModel, navController)
                         }
                         composable("settingsPage") {
                             Settings(navController)

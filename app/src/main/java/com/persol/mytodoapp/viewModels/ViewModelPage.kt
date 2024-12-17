@@ -135,7 +135,7 @@ class TodoViewModel(private val todoDao: TodoDao) : ViewModel() {
         }
     }
 
-    fun databaseUpdateTodo(existingTodo: TodoItem, newTodo: TodoItem) {
+    private fun databaseUpdateTodo(existingTodo: TodoItem, newTodo: TodoItem) {
         viewModelScope.launch {
             todoDao.updateTodo(newTodo.copy(id = existingTodo.id))
         }

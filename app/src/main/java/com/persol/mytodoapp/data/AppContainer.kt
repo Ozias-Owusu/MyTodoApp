@@ -6,6 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 interface AppContainer {
     val postRepository: PostRepository
+
 }
 
 class DefaultAppContainer: AppContainer {
@@ -22,4 +23,5 @@ class DefaultAppContainer: AppContainer {
     override val postRepository: PostRepository by lazy {
         NetworkPostRepository(retrofitService)
     }
+
 }

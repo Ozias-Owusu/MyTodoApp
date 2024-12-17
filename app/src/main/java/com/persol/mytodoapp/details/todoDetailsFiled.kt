@@ -52,6 +52,8 @@ fun TodoDetailsCard(
 
     ModalBottomSheet(
         onDismissRequest = { onCancel() },
+        scrimColor = Color.Transparent,
+        tonalElevation = 10.dp,
     ) {
         Column(
             modifier = Modifier
@@ -135,11 +137,11 @@ fun TodoDetailsCard(
                 Text(text = it, color = Color(0xFFFD4F4F), fontSize = 15.sp)
                 Spacer(modifier = Modifier.padding(5.dp))
             }
-            Row {
-                Button(onClick = { onCancel() }) {
-                    Text(text = "Cancel")
-                }
-                Spacer(modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Button(onClick = {
                     if (todoText.isNotBlank() && selectedDateTime.isNotBlank()) {
                         if (initialTodo != null) {

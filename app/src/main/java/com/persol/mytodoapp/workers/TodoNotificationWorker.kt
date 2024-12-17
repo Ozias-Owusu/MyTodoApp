@@ -22,12 +22,11 @@ class TodoNotificationWorker(
     params: WorkerParameters
 ) : CoroutineWorker(context, params) {
    override suspend fun doWork(): Result {
-       val todoText = inputData.getString("todo_text") ?: return Result.failure()
-       val todoTime = inputData.getString("todo_time") ?: return Result.failure()
+       val taskId = inputData.getString("todo_text")
+       val todoTime = inputData.getLong("todo_time", 0)
         return withContext(Dispatchers.IO) {
             return@withContext try {
-                checkTime(todoTime)
-                { showNotification(applicationContext, todoText, todoTime) }
+                showNotification(applicationContext, taskId.toString(), todoTime.toString())
                 Log.d("TodoNotificationWorker", "Notification scheduled for $todoTime")
                 Result.success()
             } catch (e: Exception) {
@@ -35,41 +34,18 @@ class TodoNotificationWorker(
                 Result.failure()
             }
         }
-//        showNotification(applicationContext, todoText, todoTime)
-//        return Result.success()
     }
 
 }
-fun checkTime( dateTime: String, run: () -> Unit) {
-    val sdf = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-    val targetTime = sdf.parse(dateTime)?.time ?: return
-    val currentTime = Calendar.getInstance().timeInMillis
-    val delay = targetTime - currentTime
-    if (delay >= 0) {
-        run()
-        println("EURIKA!!!!!!!")
-    } else {
-        println("ANNFA WAI")
-    }
-}
+
 @SuppressLint("NotificationPermission")
 fun showNotification(context: Context, todoText: String, todoTime: String) {
     val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-//        val channelId = "todo_channel_id"
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val channel = NotificationChannel(
-//                channelId,
-//                "Todo Notifications",
-//                NotificationManager.IMPORTANCE_DEFAULT
-//            )
-//            notificationManager.createNotificationChannel(channel)
-//        }
-
     val notification = NotificationCompat.Builder(context, "todo_channel_id")
         .setContentTitle("Todo Reminder")
-        .setContentText("$todoText - $todoTime")
+        .setContentText("Task labelled $todoText is due now!")
         .setSmallIcon(R.drawable.baseline_assignment_24)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .build()
