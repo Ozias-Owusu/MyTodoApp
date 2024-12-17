@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.persol.mytodoapp.appmodule.AppModule
+import com.persol.mytodoapp.screens.AccountDetailsPage
 import com.persol.mytodoapp.screens.CompletedTodos
 import com.persol.mytodoapp.screens.PinMainScreen
 import com.persol.mytodoapp.screens.PostScreen
@@ -59,7 +60,7 @@ class MainActivity : ComponentActivity() {
             MyTodoAppTheme {
                 NavHost(
                     navController = navController,
-                    startDestination = "pinPage",
+                    startDestination = "accountDetailsPage",
                     builder =
                     {
                         composable("pinPage") {
@@ -80,6 +81,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("postsScreen") {
                             PostScreen(navController)
+                        }
+                        composable("accountDetailsPage") {
+                            AccountDetailsPage(navController)
                         }
                     }
                 )

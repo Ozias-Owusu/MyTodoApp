@@ -118,35 +118,12 @@ fun UiUpdate(
         drawerContent = {
             ModalDrawerSheet {
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(shape = CircleShape)
-                            .background(Color(0xFF000000))
-                            .clickable {
-                                navController.navigate("postsScreen")
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(onClick = {
-                            navController.navigate("postsScreen")
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_person_24),
-                                contentDescription = "Person",
-                                modifier = Modifier.size(60.dp)
-                            )
-                        }
-                    }
+
+                    Text(text = "Menu", fontSize = 24.sp)
                     Spacer(modifier = Modifier.width(16.dp))
                     Spacer(modifier = Modifier.width(16.dp))
                     Spacer(modifier = Modifier.height(16.dp))
-                    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Center,
-                    )
-                    {
-                        Text("User Name", modifier = Modifier.padding(bottom = 4.dp, top = 6.dp))
-                        Text("Contact Info", fontSize = 12.sp)
-                    }
+
                 }
                 HorizontalDivider()
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
@@ -225,6 +202,7 @@ fun UiUpdate(
                     },
                     actions = {
                         IconButton(onClick = {
+                            navController.navigate("accountDetailsPage")
                         }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_person_24),
@@ -431,7 +409,7 @@ fun UiUpdate(
                     title = { Text("Confirm Completion") },
                     text = {
                         Text(
-                            "Are you sure you want to set the task: ${selectedTodo.text} as completed?"
+                            "Are you sure you want to set the task ${selectedTodo.text} as completed?"
                         )
                     },
                     confirmButton = {
