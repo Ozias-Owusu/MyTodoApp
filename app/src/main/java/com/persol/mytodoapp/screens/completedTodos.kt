@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,14 +48,17 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.persol.mytodoapp.R
 import com.persol.mytodoapp.dialogs.EditTodoDialog
@@ -252,6 +256,7 @@ fun CompletedTodoItem(
     onChecked: () -> Unit,
 ) {
     var offsetX by remember { mutableFloatStateOf(0f) }
+    var showMore by rememberSaveable { mutableStateOf(false) }
 
     SwipeToDismissBox(
         modifier = Modifier
@@ -307,7 +312,12 @@ fun CompletedTodoItem(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
+//                .animateContentSize(
+//                    animationSpec = tween(
+//                        durationMillis = 300,
+//                        easing = LinearOutSlowInEasing
+//                    )
+//            )
                 .offset(x = offsetX.dp)
                 .offset { IntOffset(offsetX.roundToInt(), 0) }
                 .pointerInput(Unit) {
@@ -329,7 +339,9 @@ fun CompletedTodoItem(
                     )
                 }
                 .combinedClickable(
-                    onClick = {},
+                    onClick = {
+                        showMore = !showMore
+                    },
                     onDoubleClick = {},
                     onLongClick = onLongPress,
                 ),
@@ -337,7 +349,7 @@ fun CompletedTodoItem(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -346,16 +358,45 @@ fun CompletedTodoItem(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = todo.text,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = "Due: ${formatDate(todo.dateTime)}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                    if (!showMore) {
+                        Box (
+                            modifier = Modifier
+                                .width(280.dp)
+                        ) {
+                        Text(
+                            text = todo.text,
+                            style = MaterialTheme.typography.titleLarge,
+                            overflow = if (!showMore) {
+                                TextOverflow.Ellipsis
+                            } else {
+                                TextOverflow.Clip
+                            },
+                            maxLines = 1,
+                        )
+                    }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "Due: ${formatDate(todo.dateTime)}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    } else {
+                        Box (
+                            modifier = Modifier
+                                .width(280.dp)
+                        ) {
+                            Text(
+                                text = todo.text,
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "Due: ${formatDate(todo.dateTime)}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
                 Checkbox(
                     checked = todo.isCompleted,

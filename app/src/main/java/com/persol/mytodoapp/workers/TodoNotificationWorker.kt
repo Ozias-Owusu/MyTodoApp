@@ -35,7 +35,6 @@ class TodoNotificationWorker(
             }
         }
     }
-
 }
 
 @SuppressLint("NotificationPermission")

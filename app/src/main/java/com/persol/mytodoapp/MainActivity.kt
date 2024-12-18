@@ -18,24 +18,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.persol.mytodoapp.appmodule.AppModule
-import com.persol.mytodoapp.screens.AccountDetailsPage
 import com.persol.mytodoapp.screens.CompletedTodos
 import com.persol.mytodoapp.screens.PinMainScreen
 import com.persol.mytodoapp.screens.PostScreen
-import com.persol.mytodoapp.screens.Settings
-import com.persol.mytodoapp.screens.TodoItem
 import com.persol.mytodoapp.screens.UiUpdate
 import com.persol.mytodoapp.ui.theme.MyTodoAppTheme
-import com.persol.mytodoapp.viewModels.PinScreenViewModel
 import com.persol.mytodoapp.viewModels.TodoViewModel
 import com.persol.mytodoapp.viewModels.TodoViewModelFactory
-import com.persol.mytodoapp.workers.scheduleTodoNotification
-import com.persol.mytodoapp.workers.showNotification
 
 class MainActivity : ComponentActivity() {
 
@@ -60,7 +53,7 @@ class MainActivity : ComponentActivity() {
             MyTodoAppTheme {
                 NavHost(
                     navController = navController,
-                    startDestination = "accountDetailsPage",
+                    startDestination = "pinPage",
                     builder =
                     {
                         composable("pinPage") {
@@ -76,15 +69,10 @@ class MainActivity : ComponentActivity() {
                         composable("completedTodosPage") {
                             CompletedTodos(viewModel = todoViewModel, navController)
                         }
-                        composable("settingsPage") {
-                            Settings(navController)
-                        }
                         composable("postsScreen") {
                             PostScreen(navController)
                         }
-                        composable("accountDetailsPage") {
-                            AccountDetailsPage(navController)
-                        }
+
                     }
                 )
             }

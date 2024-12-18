@@ -118,11 +118,13 @@ fun UiUpdate(
         drawerContent = {
             ModalDrawerSheet {
                 Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-
-                    Text(text = "Menu", fontSize = 24.sp)
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Spacer(modifier = Modifier.height(16.dp))
+                   Row( ) {
+//                       Spacer(modifier = Modifier.width(16.dp))
+                       Text(text = "Menu", fontSize = 24.sp)
+                   }
+//                    Spacer(modifier = Modifier.width(16.dp))
+//                    Spacer(modifier = Modifier.width(16.dp))
+//                    Spacer(modifier = Modifier.height(16.dp))
 
                 }
                 HorizontalDivider()
@@ -163,17 +165,6 @@ fun UiUpdate(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Posts")
                 }
-                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {})
-                {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_settings_24),
-                        contentDescription = "Settings",
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Settings")
-                }
-
             }
         }
     )
@@ -197,16 +188,6 @@ fun UiUpdate(
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_menu_24),
                                 contentDescription = "Menu"
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            navController.navigate("accountDetailsPage")
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_person_24),
-                                contentDescription = "Person"
                             )
                         }
                     },
@@ -235,7 +216,7 @@ fun UiUpdate(
                             modifier
                                 .fillMaxSize()
                                 .padding(16.dp),
-                            reverseLayout = true,
+                            reverseLayout = false,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         )
                         {

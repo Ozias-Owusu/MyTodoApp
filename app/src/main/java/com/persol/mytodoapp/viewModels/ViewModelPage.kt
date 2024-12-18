@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import java.io.IOException
 
 sealed interface PostUiState {
@@ -47,6 +48,64 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
             }
         }
     }
+//    suspend fun updatePost(post: Post): Response<Post> {
+//        return try {
+//            postRepository.updatePost(post)
+//            Response.success(post)
+//        } catch (e: IOException) {
+//            Log.e("PostViewModel", "Error updating post", e)
+//            e.printStackTrace()
+//            Response.error<>()
+//
+//        }
+//    }
+    suspend fun updatePost(post: Post): String {
+    var response = ""
+    try {
+        val result = postRepository.updatePost(post.id, post)
+        if (result.isSuccessful) {
+            response = "Post updated successfully"
+
+        } else {
+            response = "Failed to update post"
+            Log.e("PostViewModel", "Error updating post: ${result.errorBody()?.string()}")
+        }
+    } catch (e: Exception) {
+        Log.e("PostViewModel", "Error updating post", e)
+    }
+    return response
+}
+    suspend fun deletePost(post: Post): String {
+        var response = ""
+        try {
+            val result = postRepository.deletePost(post.id, post)
+            if (result.isSuccessful) {
+                response = "Post deleted successfully"
+    }else{
+                response = "Failed to delete post"
+            }
+        } catch (e: Exception) {
+            Log.e("PostViewModel", "Error deleting post", e)
+        }
+        return response
+            }
+
+    suspend fun createPost(post: Post): String {
+        var response = ""
+try {
+    val result = postRepository.createPost(post)
+    if (result.isSuccessful) {
+        response = "Post created successfully"
+    } else {
+        response = "Failed to create post"}
+
+}catch (e: Exception){
+    Log.e("PostViewModel", "Error creating post", e)
+}
+        return response
+    }
+
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
