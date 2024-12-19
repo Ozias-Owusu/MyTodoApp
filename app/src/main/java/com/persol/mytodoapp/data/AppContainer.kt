@@ -6,7 +6,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 interface AppContainer {
     val postRepository: PostRepository
-
 }
 
 class DefaultAppContainer: AppContainer {

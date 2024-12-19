@@ -48,26 +48,16 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
             }
         }
     }
-//    suspend fun updatePost(post: Post): Response<Post> {
-//        return try {
-//            postRepository.updatePost(post)
-//            Response.success(post)
-//        } catch (e: IOException) {
-//            Log.e("PostViewModel", "Error updating post", e)
-//            e.printStackTrace()
-//            Response.error<>()
-//
-//        }
-//    }
     suspend fun updatePost(post: Post): String {
     var response = ""
     try {
         val result = postRepository.updatePost(post.id, post)
         if (result.isSuccessful) {
-            response = "Post updated successfully"
+            response = result.raw().toString()
 
         } else {
-            response = "Failed to update post"
+            response = result.raw().toString()
+            println(result.raw())
             Log.e("PostViewModel", "Error updating post: ${result.errorBody()?.string()}")
         }
     } catch (e: Exception) {
@@ -80,24 +70,29 @@ class PostViewModel(private val postRepository: PostRepository) : ViewModel() {
         try {
             val result = postRepository.deletePost(post.id, post)
             if (result.isSuccessful) {
-                response = "Post deleted successfully"
-    }else{
-                response = "Failed to delete post"
+                response = result.raw().toString()
+                println(result.raw())
+            }
+            else {
+                response = result.raw().toString()
+                println(result.raw())
             }
         } catch (e: Exception) {
             Log.e("PostViewModel", "Error deleting post", e)
+            e.printStackTrace()
         }
         return response
-            }
+    }
 
     suspend fun createPost(post: Post): String {
         var response = ""
 try {
     val result = postRepository.createPost(post)
     if (result.isSuccessful) {
-        response = "Post created successfully"
+        response = result.raw().toString()
     } else {
-        response = "Failed to create post"}
+        response = result.raw().toString()
+    }
 
 }catch (e: Exception){
     Log.e("PostViewModel", "Error creating post", e)
@@ -132,10 +127,7 @@ class TodoViewModel(private val todoDao: TodoDao) : ViewModel() {
         }
     }
 
-//    fun addTodo(todo: TodoItem) {
-//        todoList.add(todo)
-//        databaseAddTodo(todo)
-//    }
+
 
     suspend fun addTodo(todo: TodoItem): Boolean {
         return try {
@@ -147,10 +139,7 @@ class TodoViewModel(private val todoDao: TodoDao) : ViewModel() {
         }
     }
 
-//    fun deleteTodo(todo: TodoItem) {
-//        todoList.remove(todo)
-//        databaseDeleteTodo(todo)
-//    }
+
     suspend fun deleteTodo(todo: TodoItem): Boolean {
         return try {
             todoList.remove(todo)
@@ -160,6 +149,17 @@ class TodoViewModel(private val todoDao: TodoDao) : ViewModel() {
             false
         }
     }
+//delete all todos
+    suspend fun deleteAllTodos(): Boolean {
+        return try {
+            todoList.clear()
+            todoDao.deleteAllTodos()
+            true
+        }
+        catch (e: Exception) {
+               false
+            }}
+
 
     fun toggleTodo(todo: TodoItem) {
         todo.isCompleted = !todo.isCompleted

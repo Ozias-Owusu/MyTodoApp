@@ -106,10 +106,10 @@ fun UiUpdate(
     val viewModel: TodoViewModel = viewModel(factory = TodoViewModelFactory(todoDao))
     var showCompleteDeleteConfirmation by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
     var isCheckboxChecked by rememberSaveable  { mutableStateOf(false) }
     var showOptions by rememberSaveable { mutableStateOf(false) }
     var onShowEditDialog by rememberSaveable { mutableStateOf(false) }
+    var showDeleteAllDialog by rememberSaveable { mutableStateOf(false) }
 
 
 
@@ -245,6 +245,19 @@ fun UiUpdate(
                 FloatingActionButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
+                        .padding(end = 30.dp, bottom = 100.dp),
+                    onClick = {
+                        showDeleteAllDialog = true
+                    },
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_delete_24),
+                        contentDescription = "Delete all"
+                    )
+                }
+                FloatingActionButton(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
                         .padding(30.dp),
                     onClick = {
                         showTodoDetails = true
@@ -255,6 +268,39 @@ fun UiUpdate(
                         contentDescription = "Add"
                     )
                 }
+                if (showDeleteAllDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDeleteAllDialog = false },
+                        title = { Text("Delete All Todos") },
+                        text = { Text("Are you sure you want to delete all todos?") },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDeleteAllDialog = false
+                                    scope.launch {
+                                        val success = viewModel.deleteAllTodos()
+                                        if (success) {
+                                            snackbarHostState.showSnackbar("All Todos successfully deleted!")
+                                        } else {
+                                            snackbarHostState.showSnackbar("Failed to delete all todos. Please try again.")
+                                        }
+                                    }
+
+                                }
+                            ) {
+                                Text("Delete")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { showDeleteConfirmation = false }
+                            ) {
+                                Text("Cancel")
+                            }
+                        }
+                    )
+                }
+
 
                 if (showTodoDetails) {
                     TodoDetailsCard(
