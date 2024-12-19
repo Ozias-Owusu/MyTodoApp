@@ -38,6 +38,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.rememberDrawerState
 
 
@@ -191,8 +192,12 @@ fun UiUpdate(
                             )
                         }
                     },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    colors = TopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                        actionIconContentColor = MaterialTheme.colorScheme.primary,
+                        scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer
                     )
                 )
             },    snackbarHost = { SnackbarHost(snackbarHostState) }

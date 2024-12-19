@@ -15,21 +15,27 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
@@ -39,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,38 +86,90 @@ fun PostScreen(
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     var showForm by remember { mutableStateOf(false) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-    Scaffold (
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Posts",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 30.sp,
-                        style = MaterialTheme.typography.titleLarge)
-                },
-                colors = TopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.primary,
-                    actionIconContentColor = MaterialTheme.colorScheme.primary,
-                    scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer
-
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = { navController.navigate("homePage") }
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                    Row() {
+                        Text(text = "Menu", fontSize = 24.sp)
+                    }
+                }
+                HorizontalDivider()
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+                    navController.navigate("homePage")
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_assignment_24),
+                        contentDescription = "My Todos",
+                        modifier = Modifier.size(24.dp)
                     )
-                    {Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
-                    )}
-                },
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("My Todos")
+                }
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+                    navController.navigate("completedTodosPage")
+                })
+                {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_check_circle_24),
+                        contentDescription = "Completed Todos",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Completed Todos")
+                }
 
-            )
-        },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        floatingActionButton = {
+                Row(modifier = Modifier.fillMaxWidth().padding(16.dp).clickable {
+
+                    navController.navigate("postsScreen")
+
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_person_24),
+                        contentDescription = "People",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Posts")
+                }
+            }
+        }
+    ) {
+        Scaffold (
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(text = "Posts",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 30.sp,
+                            style = MaterialTheme.typography.titleLarge)
+                    },
+                    colors = TopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                        actionIconContentColor = MaterialTheme.colorScheme.primary,
+                        scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer
+
+                    ),
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { scope.launch{ drawerState.open() }}
+                        )
+                        {
+                            Icon(
+                                Icons.Default.Menu,
+                                contentDescription = "Back",
+                            )}
+                    },
+
+                    )
+            },
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            floatingActionButton = {
                 FloatingActionButton(
                     onClick = {
                         showForm = true
@@ -121,55 +180,52 @@ fun PostScreen(
                         contentDescription = "Add"
                     )
                 }
-        }
-    ) {
-        innerPadding ->
-        val viewModel: PostViewModel = viewModel(factory = ViewModelProvider.Factory)
-        when (val postUiState = viewModel.postUiState) {
-            is PostUiState.Success -> PostList(
-                posts = postUiState.posts,
-                Modifier.padding(innerPadding),
-                onLongPress = { showOptions = true},
-                onEditDone = {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(viewModel.updatePost(selectedPost))
-                        println("DANGGGGGGGG ${selectedPost.body}")
-                    }
-                    showOptions = false
-                },
-                selectedPost = selectedPost,
-                onDeleteDone = {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(viewModel.deletePost(selectedPost))
-                    }
-                    showOptions = false
-                }
+            }
+        ) {
+                innerPadding ->
+            val viewModel: PostViewModel = viewModel(factory = ViewModelProvider.Factory)
+            when (val postUiState = viewModel.postUiState) {
+                is PostUiState.Success -> PostList(
+                    posts = postUiState.posts,
+                    Modifier.padding(innerPadding),
+                    onLongPress = { showOptions = true},
+                    selectedPost = selectedPost,
+                    onDeleteDone = {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(viewModel.deletePost(selectedPost))
+                        }
+                        showOptions = false
+                    },
+                    snackbarHostState = snackbarHostState
                 )
 
-            is PostUiState.Error -> ErrorScreen(retryAction = viewModel::getPostItems)
-            is PostUiState.Loading -> LoadingScreen()
-        }
-        if (showForm) {
-            var title by remember { mutableStateOf(selectedPost.title) }
-            var body by remember { mutableStateOf(selectedPost.body) }
-            PostEditingFields(
-                formTitle = "Create Post",
-                title = title,
-                body = body,
-                onDismiss = { showForm = false },
-                selectedPost = selectedPost,
-                onValueChange = {title= it },
-                onBodyChange = { body = it },
-                onEdit = {
-                    scope.launch {
-                        viewModel.createPost(selectedPost)
-                        snackbarHostState.showSnackbar(viewModel.createPost(selectedPost))
+                is PostUiState.Error -> ErrorScreen(retryAction = viewModel::getPostItems)
+                is PostUiState.Loading -> LoadingScreen()
+            }
+            if (showForm) {
+                var title by remember { mutableStateOf(selectedPost.title) }
+                var body by remember { mutableStateOf(selectedPost.body) }
+                PostEditingFields(
+                    formTitle = "Create Post",
+                    title = title,
+                    body = body,
+                    onDismiss = { showForm = false },
+                    selectedPost = selectedPost,
+                    onValueChange = {title= it },
+                    onBodyChange = { body = it },
+                    onEdit = {
+                        scope.launch {
+                            viewModel.createPost(selectedPost)
+                            snackbarHostState.showSnackbar(viewModel.createPost(selectedPost))
+                        }
+                        showForm = false
                     }
-                    showForm = false
-                }
-            )
+                )
+            }
         }
     }
+
+
 
 }
 // editing post screen
@@ -203,7 +259,7 @@ fun PostOptionsDialog(
                     thisPost = selectedPost
                     onEditSelected()
                 },
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
                 )
 
@@ -215,7 +271,7 @@ fun PostOptionsDialog(
                     thisPost = selectedPost
                     println("hIIIII ${thisPost!!.title}")
                     onDeleteSelected()},
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error
                 )
 
@@ -329,8 +385,8 @@ fun PostList(
     modifier: Modifier = Modifier,
     onLongPress: () -> Unit,
     selectedPost: Post?,
-    onEditDone: () -> Unit,
-    onDeleteDone: () -> Unit
+    onDeleteDone: () -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     var thisPost by remember { mutableStateOf(selectedPost) }
     var showOptions by remember { mutableStateOf(false) }
@@ -411,7 +467,7 @@ fun PostList(
                    viewModel.updatePost(thisPost!!)
                    println(thisPost!!.id)
                    editingDialog = false
-                   onEditDone()
+                   snackbarHostState.showSnackbar(viewModel.updatePost(thisPost!!))
                }
             },
             onDismiss = { editingDialog = false },

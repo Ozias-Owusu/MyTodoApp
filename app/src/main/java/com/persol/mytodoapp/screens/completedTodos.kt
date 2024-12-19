@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,20 +28,27 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -81,169 +90,238 @@ fun CompletedTodos(
     val snackbarHostState = remember { SnackbarHostState() }
     var showOptions by remember { mutableStateOf(false) }
     var onShowEditDialog by remember { mutableStateOf(false) }
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var showDeleteConfirmation by remember { mutableStateOf(false) }
     var selectedTodo = TodoItem(id = 0, text = "", dateTime = "", isCompleted = false)
     var editingTodo by remember { mutableStateOf<TodoItem?>(null) }
     var showTodoDetails by remember { mutableStateOf(false) }
     var isCheckboxChecked by remember { mutableStateOf(false) }
 
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(title = { Text("Completed Todos") },
-                                navigationIcon = {
-                    IconButton(onClick = { navController.navigate("homePage") }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_arrow_back_ios_24),
-                            contentDescription = "Menu"
-                        )
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)) {
+                    Row{
+                        Text(text = "Menu", fontSize = 24.sp)
                     }
                 }
-
-                )
-        },
-        content = { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                if (completedTodos.isEmpty()) {
-                    Text(
-                        text = "No completed todos.",
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                } else {
-                    LazyColumn(
-                        Modifier.fillMaxSize()
-                    ) {
-                        items(completedTodos) { todo ->
-                            CompletedTodoItem(todo,
-                                onLongPress = {
-                                    showOptions = true
-                                    selectedTodo = todo
-                                },
-                                onSwipeRight = {
-                                    showDeleteConfirmation = true
-                                    selectedTodo = todo
-                                },
-                                onChecked = {
-                                    selectedTodo = todo
-                                    isCheckboxChecked = !isCheckboxChecked
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-            if (showOptions) {
-                LongPressDialog(
-                    todo = selectedTodo,
-                    viewModel = viewModel,
-                    onEdit = {
-                        editingTodo = selectedTodo.copy()
-                        showTodoDetails = true
-                    },
-                    onDelete = {
-                        showDeleteConfirmation = true
-                        showOptions = false
-                    },
-                    onDismiss = {
-                        showOptions = false
-                    },
-                    onShowEditDialog = {
-                        showOptions = false
-                        onShowEditDialog = true
-                    }
-                )
-            }
-            if (onShowEditDialog) {
-                EditTodoDialog(
-                    todo = selectedTodo,
-                    onEditTodo = {
-                        viewModel.updateTodo(selectedTodo, it)
-                    },
-                    onDismiss = {
-                        onShowEditDialog = false
-                    }
-                )
-            }
-
-            if (showDeleteConfirmation) {
-                AlertDialog(
-                    onDismissRequest = { showDeleteConfirmation = false },
-                    title = { Text("Delete Todo") },
-                    text = { Text("Are you sure you want to delete this todo?") },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                showDeleteConfirmation = false
-                                scope.launch {
-                                    val success = viewModel.deleteTodo(selectedTodo)
-                                    if (success) {
-                                        snackbarHostState.showSnackbar("Todo successfully deleted!")
-                                    } else {
-                                        snackbarHostState.showSnackbar("Failed to delete the todo. Please try again.")
-                                    }
-                                }
-                            }
-                        ) {
-                            Text("Delete")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(
-                            onClick = { showDeleteConfirmation = false }
-                        ) {
-                            Text("Cancel")
-                        }
-                    }
-                )
-            }
-            if (isCheckboxChecked){
-                AlertDialog(
-                    onDismissRequest = { isCheckboxChecked = false },
-                    title = { Text("Confirm Completion") },
-                    text = {
-                        Text(
-                            "Are you sure you want to set the task: ${selectedTodo.text} as uncompleted?"
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            isCheckboxChecked = false
-                            scope.launch {
-                                viewModel.toggleTodo(selectedTodo)
-                                snackbarHostState.showSnackbar(
-                                    message = "Task Reversed Successfully"
-                                )
-                            }
-
-                        }) {
-                            Text("Confirm")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { isCheckboxChecked = false }) {
-                            Text("Cancel")
-                        }
-                    }
-                )
-            }
-        },
-        bottomBar = {
-            Button(
-                onClick = { viewModel.clearCompletedTodos() },
-                modifier = Modifier
+                HorizontalDivider()
+                Row(modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-            ) {
-                Text("Clear All")
+                    .clickable {
+                        navController.navigate("homePage")
+                    }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_assignment_24),
+                        contentDescription = "My Todos",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("My Todos")
+                }
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clickable {
+                        navController.navigate("completedTodosPage")
+                    })
+                {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_check_circle_24),
+                        contentDescription = "Completed Todos",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Completed Todos")
+                }
+
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clickable {
+
+                        navController.navigate("postsScreen")
+
+                    }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_person_24),
+                        contentDescription = "People",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Posts")
+                }
             }
         }
-    )
+    ) {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(title = { Text("Completed Todos") },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() }}) {
+                            Icon(
+                                Icons.Default.Menu,
+                                contentDescription = "Menu"
+                            )
+                        }
+                    },
+                    colors = TopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                        navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                        actionIconContentColor = MaterialTheme.colorScheme.primary,
+                        scrolledContainerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+
+                )
+            },
+            content = { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                ) {
+                    if (completedTodos.isEmpty()) {
+                        Text(
+                            text = "No completed todos.",
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    } else {
+                        LazyColumn(
+                            Modifier.fillMaxSize()
+                        ) {
+                            items(completedTodos) { todo ->
+                                CompletedTodoItem(todo,
+                                    onLongPress = {
+                                        showOptions = true
+                                        selectedTodo = todo
+                                    },
+                                    onSwipeRight = {
+                                        showDeleteConfirmation = true
+                                        selectedTodo = todo
+                                    },
+                                    onChecked = {
+                                        selectedTodo = todo
+                                        isCheckboxChecked = !isCheckboxChecked
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
+                if (showOptions) {
+                    LongPressDialog(
+                        todo = selectedTodo,
+                        viewModel = viewModel,
+                        onEdit = {
+                            editingTodo = selectedTodo.copy()
+                            showTodoDetails = true
+                        },
+                        onDelete = {
+                            showDeleteConfirmation = true
+                            showOptions = false
+                        },
+                        onDismiss = {
+                            showOptions = false
+                        },
+                        onShowEditDialog = {
+                            showOptions = false
+                            onShowEditDialog = true
+                        }
+                    )
+                }
+                if (onShowEditDialog) {
+                    EditTodoDialog(
+                        todo = selectedTodo,
+                        onEditTodo = {
+                            viewModel.updateTodo(selectedTodo, it)
+                        },
+                        onDismiss = {
+                            onShowEditDialog = false
+                        }
+                    )
+                }
+
+                if (showDeleteConfirmation) {
+                    AlertDialog(
+                        onDismissRequest = { showDeleteConfirmation = false },
+                        title = { Text("Delete Todo") },
+                        text = { Text("Are you sure you want to delete this todo?") },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDeleteConfirmation = false
+                                    scope.launch {
+                                        val success = viewModel.deleteTodo(selectedTodo)
+                                        if (success) {
+                                            snackbarHostState.showSnackbar("Todo successfully deleted!")
+                                        } else {
+                                            snackbarHostState.showSnackbar("Failed to delete the todo. Please try again.")
+                                        }
+                                    }
+                                }
+                            ) {
+                                Text("Delete")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { showDeleteConfirmation = false }
+                            ) {
+                                Text("Cancel")
+                            }
+                        }
+                    )
+                }
+                if (isCheckboxChecked) {
+                    AlertDialog(
+                        onDismissRequest = { isCheckboxChecked = false },
+                        title = { Text("Confirm Completion") },
+                        text = {
+                            Text(
+                                "Are you sure you want to set the task: ${selectedTodo.text} as uncompleted?"
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                isCheckboxChecked = false
+                                scope.launch {
+                                    viewModel.toggleTodo(selectedTodo)
+                                    snackbarHostState.showSnackbar(
+                                        message = "Task Reversed Successfully"
+                                    )
+                                }
+
+                            }) {
+                                Text("Confirm")
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { isCheckboxChecked = false }) {
+                                Text("Cancel")
+                            }
+                        }
+                    )
+                }
+            },
+            bottomBar = {
+                Button(
+                    onClick = { viewModel.clearCompletedTodos() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text("Clear All")
+                }
+            }
+        )
+    }
 }
 
 @SuppressLint("UseOfNonLambdaOffsetOverload")
@@ -261,7 +339,7 @@ fun CompletedTodoItem(
     SwipeToDismissBox(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(top = 10.dp, start = 16.dp, end = 16.dp)
             .animateContentSize(
                 animationSpec = tween(
                     durationMillis = 300,
@@ -401,7 +479,8 @@ fun CompletedTodoItem(
                 Checkbox(
                     checked = todo.isCompleted,
                     onCheckedChange = { onChecked() },
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
                         .padding(start = 10.dp)
                 )
             }
